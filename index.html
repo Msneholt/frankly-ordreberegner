@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="theme-color" content="#174c36" />
+    <title>Frankly · B2B prisgrupper</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Frankly prisgrupper">
+        <img class="brand-logo" src="./assets/frankly-logo-transparent.png" alt="Frankly" />
+        <span class="brand-context">B2B PRISGRUPPER</span>
+      </a>
+      <div class="topbar-actions">
+        <a id="customerVersionButtonDa" class="customer-version-button" href="./ordreberegner/" target="_blank" rel="noopener">Ordreberegner</a>
+        <a id="customerVersionButtonEn" class="customer-version-button" href="./order-calculator/" target="_blank" rel="noopener">Order Calculator</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero-section section-shell" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow">NY WEBSHOP · INTERN PRISMODEL</p>
+          <h1 id="page-title">Find den rigtige prisgruppe på få sekunder.</h1>
+          <p class="intro">Indtast produktmixet pr. levering og vælg leveringsfrekvens. Værktøjet omregner til ugentlige credits, matcher kunden med en prisgruppe og viser hele prislisten.</p>
+        </div>
+
+        <div class="calculator-grid">
+          <div class="input-panel card">
+            <div class="input-panel-heading">
+              <div>
+                <p class="input-title">Produktmix pr. levering</p>
+                <p class="input-subtitle">Indtast antal flasker, shots og BiB</p>
+              </div>
+              <button id="clearMixButton" class="mini-button" type="button">Ryd</button>
+            </div>
+
+            <div class="customer-settings">
+              <label class="cadence-field" for="employeeInput">
+                <span>Antal medarbejdere</span>
+                <input id="employeeInput" type="number" min="1" step="1" value="10" inputmode="numeric" />
+              </label>
+              <label class="cadence-field" for="cadenceSelect">
+                <span>Leveringsfrekvens</span>
+                <select id="cadenceSelect">
+                  <option value="1">Hver uge</option>
+                  <option value="2">Hver 2. uge</option>
+                  <option value="3">Hver 3. uge</option>
+                  <option value="4">Hver 4. uge</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="quantityGrid" class="quantity-grid"></div>
+
+            <div class="credit-total">
+              <div>
+                <span>Beregnet ugevolumen</span>
+                <small id="creditFormula">300 credits ÷ 1 uge</small>
+              </div>
+              <strong><span id="creditTotal">300</span> credits/uge</strong>
+            </div>
+            <div id="nextTier" class="next-tier"></div>
+            <p class="field-note">Prisgruppen beregnes ud fra credits – ikke det rå antal produkter.</p>
+          </div>
+
+          <div class="recommendation card card-dark" aria-live="polite">
+            <div class="result-heading">
+              <div>
+                <p class="result-label">ANBEFALET PRISGRUPPE</p>
+                <h2 id="tierName">Premium</h2>
+              </div>
+              <div id="tierRange" class="tier-pill">300–499 / uge</div>
+            </div>
+            <div id="priceCards" class="price-cards"></div>
+            <div id="employeeMetrics" class="employee-summary"></div>
+            <div id="upgradeTrade" class="upgrade-trade"></div>
+            <div class="recommendation-actions">
+              <button id="quoteButton" class="primary-button" type="button">
+                Opret pristilbud
+                <span aria-hidden="true">↗</span>
+              </button>
+              <button id="copyButton" class="dark-secondary-button" type="button">Kopiér prisoversigt</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="model-section section-shell" aria-labelledby="model-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">SAMLET MODEL</p>
+            <h2 id="model-title">Grænser og priser</h2>
+            <p>Priser er ekskl. moms og pr. enhed. Ændringer gemmes kun i din browser.</p>
+          </div>
+          <div class="model-actions">
+            <button id="resetButton" class="text-button" type="button">Nulstil</button>
+            <button id="editButton" class="secondary-button" type="button" aria-pressed="false">Justér model</button>
+          </div>
+        </div>
+
+        <div id="validationBanner" class="validation-banner" role="status" hidden></div>
+        <div class="table-wrap card">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Prisgruppe</th>
+                <th scope="col">Credits / uge</th>
+                <th scope="col">250 ml juice</th>
+                <th scope="col">60 ml shot</th>
+                <th scope="col">340 ml energi</th>
+                <th scope="col">250 ml smoothie</th>
+                <th scope="col">750 ml juice</th>
+              </tr>
+            </thead>
+            <tbody id="pricingTableBody"></tbody>
+          </table>
+        </div>
+        <p class="table-hint">Tip: Justér gruppens startgrænse eller priser direkte i tabellen. Næste gruppes start bestemmer automatisk den forrige gruppes slutpunkt.</p>
+      </section>
+
+      <section class="checks-section section-shell" aria-labelledby="checks-title">
+        <div>
+          <p class="eyebrow">MODELkontrol</p>
+          <h2 id="checks-title">Ankre og grænsetilfælde</h2>
+        </div>
+        <div id="checkGrid" class="check-grid"></div>
+      </section>
+    </main>
+
+    <div id="quoteModal" class="quote-modal" hidden>
+      <div class="quote-backdrop" data-close-quote></div>
+      <div class="quote-dialog" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">
+        <div class="quote-toolbar">
+          <div>
+            <p class="eyebrow">PRISKLART KUNDETILBUD</p>
+            <h2 id="quoteModalTitle">Opret pristilbud</h2>
+          </div>
+          <button class="quote-close" type="button" data-close-quote aria-label="Luk tilbud">×</button>
+        </div>
+
+        <div class="quote-controls">
+          <label>Virksomhed<input id="quoteCompany" type="text" placeholder="Kundens virksomhedsnavn" /></label>
+          <label>Kontaktperson<input id="quoteContact" type="text" placeholder="Navn" /></label>
+          <label>Postnummer<input id="quotePostalCode" type="text" inputmode="numeric" maxlength="4" placeholder="2100" /><span>95 / 145 DKK · gratis fra 2.250 DKK · 4001–9999: 595 + 135 DKK</span></label>
+          <label>Gyldig til<input id="quoteValidUntil" type="date" /></label>
+          <label id="quoteBibPriceField" hidden>BiB-pris<input id="quoteBibPrice" type="number" min="0" step="0.5" placeholder="Pris pr. BiB" /><span>DKK</span></label>
+          <label>Tilbudsnr.<input id="quoteNumber" type="text" placeholder="Fx T-2026-001" /></label>
+          <label class="quote-comment-field">Kommentar til tilbuddet<textarea id="quoteComment" rows="3" placeholder="Fx opstart, levering eller særlige aftaler"></textarea></label>
+        </div>
+
+        <article id="quotePreview" class="quote-document"></article>
+
+        <div class="quote-actions">
+          <button id="copyQuoteButton" class="text-button" type="button">Kopiér tilbud</button>
+          <button id="downloadQuoteButton" class="secondary-button" type="button">Gem tilbud</button>
+          <button id="printQuoteButton" class="primary-button quote-print-button" type="button">Print / Gem som PDF <span aria-hidden="true">↗</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
