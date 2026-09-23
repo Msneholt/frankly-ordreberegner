@@ -53,17 +53,18 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(visibleMarkup, /id="employeesNotApplicable"/);
   assert.match(visibleMarkup, /Ikke relevant/);
   assert.match(visibleMarkup, /<option value="once">Éngangsbestilling<\/option>/);
-  assert.match(visibleMarkup, /Postnummer/);
+  assert.match(visibleMarkup, /Postnr\./);
   assert.match(visibleMarkup, /id="cvr"/);
   assert.match(visibleMarkup, /id="invoiceEmail"/);
   assert.match(visibleMarkup, /id="phone"/);
   assert.match(visibleMarkup, /id="deliveryAddress"/);
   assert.match(visibleMarkup, /Faktureringsmail/);
-  assert.match(visibleMarkup, /Telefonnummer/);
+  assert.match(visibleMarkup, /Telefonnr\./);
   assert.match(visibleMarkup, /Leveringsadresse/);
-  assert.match(visibleMarkup, /id="company"[^>]*placeholder="XYZ"/);
-  assert.match(visibleMarkup, /id="cvr"[^>]*placeholder="123"/);
-  assert.match(visibleMarkup, /id="postalCode"[^>]*placeholder="123"/);
+  for (const fieldId of ["company", "cvr", "invoiceEmail", "postalCode", "deliveryAddress", "contact", "phone"]) {
+    assert.match(visibleMarkup, new RegExp(`id="${fieldId}"[^>]*placeholder="\\.\\.\\."`));
+  }
+  assert.doesNotMatch(visibleMarkup, /placeholder="(?:XYZ|123)"/);
   assert.doesNotMatch(visibleMarkup, /95 DKK: 1000–2999|145 DKK: 3000–4000|4001–9999/);
   assert.match(visibleMarkup, /Levering/);
   assert.match(visibleMarkup, /Pris pr\. medarbejder \/ uge/);
@@ -75,7 +76,7 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(visibleMarkup, /Print \/ Gem som PDF/);
   assert.match(visibleMarkup, /<th>Stykpris<\/th>/);
   assert.doesNotMatch(visibleMarkup, /<th>Stk\.<\/th>/);
-  assert.match(visibleMarkup, /Tilbudsnummer \(valgfrit\)/);
+  assert.doesNotMatch(visibleMarkup, /Tilbudsnummer|id="offerNumber"/);
   assert.match(visibleMarkup, /<textarea id="customerComment"/);
   assert.match(visibleMarkup, /id="commentPreview"/);
   assert.match(visibleMarkup, /id="cleanQuote"/);
@@ -100,7 +101,7 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(script[1], /EUR-palle/);
   assert.match(script[1], /Levering i alt/);
   assert.match(script[1], /"Kommentar:"/);
-  assert.match(script[1], /cleanQuoteOfferNumber/);
+  assert.doesNotMatch(script[1], /cleanQuoteOfferNumber|offerNumber/);
   assert.match(script[1], /Det rene pristilbud er gemt/);
   assert.match(script[1], /250 ml spinat/);
   assert.match(script[1], /250 ml appelsin/);
@@ -143,6 +144,7 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
   assert.match(html, /Invoice email/);
   assert.match(html, /Phone number/);
   assert.match(html, /Delivery address/);
+  assert.match(html, /Postal code/);
   assert.match(html, /CVR/);
   assert.match(html, /Price group · Standard/);
   assert.match(html, /Save this quote and send it to Frankly\./);
@@ -152,6 +154,8 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
   assert.match(html, /Order .*additional products and get a lower price per product/);
   assert.match(html, /<option value="once">One-time order<\/option>/);
   assert.match(html, /Not applicable/);
+  assert.doesNotMatch(html, /Quote number|id="offerNumber"/);
+  assert.doesNotMatch(html, /placeholder="(?:XYZ|123)"/);
   assert.match(html, /250 ml spinach/);
   assert.match(html, /340 ml lime\/lemon energy/);
   assert.doesNotMatch(html, /Free from DKK 2,250|4001–9999: DKK 595/);
@@ -163,9 +167,20 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
 test("virksomhedsoplysninger står før Jeres behov, som står over alle produkter", () => {
   const html = buildCustomerHtml();
   const companyField = html.indexOf('id="company"');
+  const cvrField = html.indexOf('id="cvr"');
+  const invoiceEmailField = html.indexOf('id="invoiceEmail"');
+  const postalCodeField = html.indexOf('id="postalCode"');
+  const deliveryAddressField = html.indexOf('id="deliveryAddress"');
+  const contactField = html.indexOf('id="contact"');
+  const phoneField = html.indexOf('id="phone"');
   const needsHeading = html.indexOf('id="form-title"');
   const productGrid = html.indexOf('id="productGrid"');
   assert.ok(companyField !== -1 && companyField < needsHeading);
+  assert.match(html, /class="field field-wide"[^>]*><span>Virksomhed/);
+  assert.ok(companyField < cvrField && cvrField < invoiceEmailField);
+  assert.ok(invoiceEmailField < postalCodeField && postalCodeField < deliveryAddressField);
+  assert.ok(deliveryAddressField < contactField && contactField < phoneField);
+  assert.ok(phoneField < needsHeading);
   assert.ok(needsHeading < productGrid);
   assert.doesNotMatch(html, /firstProductGrid|remainingProductGrid/);
 });
