@@ -64,9 +64,7 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(visibleMarkup, /id="company"[^>]*placeholder="XYZ"/);
   assert.match(visibleMarkup, /id="cvr"[^>]*placeholder="123"/);
   assert.match(visibleMarkup, /id="postalCode"[^>]*placeholder="123"/);
-  assert.match(visibleMarkup, /95 DKK: 1000–2999/);
-  assert.match(visibleMarkup, /145 DKK: 3000–4000/);
-  assert.match(visibleMarkup, /4001–9999: 595 DKK \+ 135 DKK EUR-palle/);
+  assert.doesNotMatch(visibleMarkup, /95 DKK: 1000–2999|145 DKK: 3000–4000|4001–9999/);
   assert.match(visibleMarkup, /Levering/);
   assert.match(visibleMarkup, /Pris pr\. medarbejder \/ uge/);
   assert.match(visibleMarkup, /Produkter pr\. levering/);
@@ -97,7 +95,7 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(html, /\.result-card\{color:var\(--ink\);background:var\(--paper\)\}/);
   assert.doesNotMatch(visibleMarkup, /Løsning til jeres arbejdsplads|Prisen opdateres automatisk/i);
   assert.match(script[1], /extraProducts/);
-  assert.match(script[1], /Bestil .*produkter yderligere og få en bedre stykpris/);
+  assert.match(script[1], /Bestil .*produkter yderligere og få en lavere pris pr\. produkt/);
   assert.doesNotMatch(visibleMarkup, /Næste prisgruppe/);
   assert.match(script[1], /EUR-palle/);
   assert.match(script[1], /Levering i alt/);
@@ -151,25 +149,25 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
   assert.doesNotMatch(html, /Copy quote/);
   assert.match(html, /Unit price/);
   assert.doesNotMatch(html, /Stykpris/);
-  assert.match(html, /Order .*additional products and get a better unit price/);
+  assert.match(html, /Order .*additional products and get a lower price per product/);
   assert.match(html, /<option value="once">One-time order<\/option>/);
   assert.match(html, /Not applicable/);
   assert.match(html, /250 ml spinach/);
   assert.match(html, /340 ml lime\/lemon energy/);
-  assert.match(html, /Free from DKK 2,250/);
-  assert.match(html, /4001–9999: DKK 595 \+ DKK 135 EUR pallet/);
+  assert.doesNotMatch(html, /Free from DKK 2,250|4001–9999: DKK 595/);
   assert.match(html, /Total delivery/);
   assert.match(html, /EUR pallet/);
   assert.doesNotMatch(html, /Sammensæt|Jeres behov|Prisgruppe|Leveringsfrekvens|Kopiér|Tilbudsnummer|Postnummer|Éngangsbestilling|Ikke relevant|bestillingen/);
 });
 
-test("Jeres behov står efter den første produktvariant og før de resterende", () => {
+test("virksomhedsoplysninger står før Jeres behov, som står over alle produkter", () => {
   const html = buildCustomerHtml();
-  const firstProductSlot = html.indexOf('id="firstProductGrid"');
+  const companyField = html.indexOf('id="company"');
   const needsHeading = html.indexOf('id="form-title"');
-  const remainingProducts = html.indexOf('id="remainingProductGrid"');
-  assert.ok(firstProductSlot !== -1 && firstProductSlot < needsHeading);
-  assert.ok(needsHeading < remainingProducts);
+  const productGrid = html.indexOf('id="productGrid"');
+  assert.ok(companyField !== -1 && companyField < needsHeading);
+  assert.ok(needsHeading < productGrid);
+  assert.doesNotMatch(html, /firstProductGrid|remainingProductGrid/);
 });
 
 test("kundeversionen indeholder kun de 13 aftalte SKU'er", () => {
