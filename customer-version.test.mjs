@@ -54,6 +54,11 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(visibleMarkup, /Ikke relevant/);
   assert.match(visibleMarkup, /<option value="once">Éngangsbestilling<\/option>/);
   assert.match(visibleMarkup, /Postnummer/);
+  assert.match(visibleMarkup, /id="cvr"/);
+  assert.match(visibleMarkup, /id="invoiceEmail"/);
+  assert.match(visibleMarkup, /id="phone"/);
+  assert.match(visibleMarkup, /Faktureringsmail/);
+  assert.match(visibleMarkup, /Telefonnummer/);
   assert.match(visibleMarkup, /95 DKK: 1000–2999/);
   assert.match(visibleMarkup, /145 DKK: 3000–4000/);
   assert.match(visibleMarkup, /4001–9999: 595 DKK \+ 135 DKK EUR-palle/);
@@ -62,7 +67,7 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(visibleMarkup, /Produkter pr\. levering/);
   assert.match(visibleMarkup, /id="productTotal">0 stk\./);
   assert.match(visibleMarkup, /Gem dette tilbud og send det til Frankly\./);
-  assert.match(visibleMarkup, /Kopiér tilbud/);
+  assert.doesNotMatch(visibleMarkup, /Kopiér tilbud/);
   assert.match(visibleMarkup, /Gem tilbud/);
   assert.match(visibleMarkup, /Print \/ Gem som PDF/);
   assert.match(visibleMarkup, /Tilbudsnummer \(valgfrit\)/);
@@ -72,6 +77,10 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(script[1], /productTotal.*unitsDelivery/);
   assert.match(script[1], /oneTime=cadenceValue==="once"/);
   assert.match(script[1], /employeesRelevant=!document\.getElementById\("employeesNotApplicable"\)\.checked/);
+  assert.doesNotMatch(script[1], /state\.priceReady&&state\.employeesRelevant&&!state\.oneTime/);
+  assert.match(script[1], /state\.employeesRelevant&&!state\.oneTime/);
+  assert.match(script[1], /cleanQuoteInvoiceEmail/);
+  assert.match(script[1], /cleanQuotePhone/);
   assert.match(script[1], /employeeMetricsReady/);
   assert.doesNotMatch(script[1], /product\.label\)+' · stk\. pr\. levering/);
   assert.match(script[1], /quantity-unit">stk\./);
@@ -125,8 +134,12 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
   assert.match(html, /<html lang="en">/);
   assert.match(html, /Frankly · Order Calculator/);
   assert.match(html, /Build your order/);
+  assert.match(html, /Invoice email/);
+  assert.match(html, /Phone number/);
+  assert.match(html, /CVR/);
   assert.match(html, /Price group · Standard/);
   assert.match(html, /Save this quote and send it to Frankly\./);
+  assert.doesNotMatch(html, /Copy quote/);
   assert.match(html, /<option value="once">One-time order<\/option>/);
   assert.match(html, /Not applicable/);
   assert.match(html, /250 ml spinach/);
