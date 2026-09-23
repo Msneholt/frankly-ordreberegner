@@ -88,12 +88,16 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(script[1], /cleanQuoteInvoiceEmail/);
   assert.match(script[1], /cleanQuotePhone/);
   assert.match(script[1], /cleanQuoteDeliveryAddress/);
+  assert.match(script[1], /Antal produkter i alt.*state\.unitsDelivery/);
+  assert.doesNotMatch(visibleMarkup, /id="cleanQuoteNext"/);
+  assert.doesNotMatch(script[1], /cleanQuoteNextText/);
   assert.match(script[1], /employeeMetricsReady/);
   assert.doesNotMatch(script[1], /product\.label\)+' · stk\. pr\. levering/);
   assert.match(script[1], /quantity-unit">stk\./);
   assert.match(script[1], /Pakke á/);
   assert.doesNotMatch(html, /#dff05f|#e9f77f/i);
   assert.match(html, /\.result-card\{color:var\(--ink\);background:var\(--paper\)\}/);
+  assert.match(html, /\.metric,\.metric:first-child\{border-color:var\(--line\);background:var\(--green-soft\)\}/);
   assert.doesNotMatch(visibleMarkup, /Løsning til jeres arbejdsplads|Prisen opdateres automatisk/i);
   assert.match(script[1], /extraProducts/);
   assert.match(script[1], /Bestil .*produkter yderligere og få en lavere pris pr\. produkt/);
@@ -112,6 +116,8 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(script[1], /60 ml gurkemeje\/chili shot/);
   assert.match(script[1], /340 ml passion energi/);
   assert.match(script[1], /340 ml lime\/citron energi/);
+  assert.match(script[1], /product\.key==="shot60_ginger"\?" category-start"/);
+  assert.match(html, /\.product-field\.category-start\{grid-column:1\}/);
   assert.doesNotMatch(html, /750 ml juice|5 L BiB/);
   assert.match(html, /<title>Frankly · Ordreberegner<\/title>/);
 });
@@ -160,6 +166,8 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
   assert.match(html, /340 ml lime\/lemon energy/);
   assert.doesNotMatch(html, /Free from DKK 2,250|4001–9999: DKK 595/);
   assert.match(html, /Total delivery/);
+  assert.match(html, /Total number of products/);
+  assert.doesNotMatch(html, /products i alt/);
   assert.match(html, /EUR pallet/);
   assert.doesNotMatch(html, /Sammensæt|Jeres behov|Prisgruppe|Leveringsfrekvens|Kopiér|Tilbudsnummer|Postnummer|Éngangsbestilling|Ikke relevant|bestillingen/);
 });
