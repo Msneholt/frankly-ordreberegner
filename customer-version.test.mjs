@@ -57,8 +57,13 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(visibleMarkup, /id="cvr"/);
   assert.match(visibleMarkup, /id="invoiceEmail"/);
   assert.match(visibleMarkup, /id="phone"/);
+  assert.match(visibleMarkup, /id="deliveryAddress"/);
   assert.match(visibleMarkup, /Faktureringsmail/);
   assert.match(visibleMarkup, /Telefonnummer/);
+  assert.match(visibleMarkup, /Leveringsadresse/);
+  assert.match(visibleMarkup, /id="company"[^>]*placeholder="XYZ"/);
+  assert.match(visibleMarkup, /id="cvr"[^>]*placeholder="123"/);
+  assert.match(visibleMarkup, /id="postalCode"[^>]*placeholder="123"/);
   assert.match(visibleMarkup, /95 DKK: 1000–2999/);
   assert.match(visibleMarkup, /145 DKK: 3000–4000/);
   assert.match(visibleMarkup, /4001–9999: 595 DKK \+ 135 DKK EUR-palle/);
@@ -70,6 +75,8 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.doesNotMatch(visibleMarkup, /Kopiér tilbud/);
   assert.match(visibleMarkup, /Gem tilbud/);
   assert.match(visibleMarkup, /Print \/ Gem som PDF/);
+  assert.match(visibleMarkup, /<th>Stykpris<\/th>/);
+  assert.doesNotMatch(visibleMarkup, /<th>Stk\.<\/th>/);
   assert.match(visibleMarkup, /Tilbudsnummer \(valgfrit\)/);
   assert.match(visibleMarkup, /<textarea id="customerComment"/);
   assert.match(visibleMarkup, /id="commentPreview"/);
@@ -81,6 +88,7 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(script[1], /state\.employeesRelevant&&!state\.oneTime/);
   assert.match(script[1], /cleanQuoteInvoiceEmail/);
   assert.match(script[1], /cleanQuotePhone/);
+  assert.match(script[1], /cleanQuoteDeliveryAddress/);
   assert.match(script[1], /employeeMetricsReady/);
   assert.doesNotMatch(script[1], /product\.label\)+' · stk\. pr\. levering/);
   assert.match(script[1], /quantity-unit">stk\./);
@@ -89,8 +97,8 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(html, /\.result-card\{color:var\(--ink\);background:var\(--paper\)\}/);
   assert.doesNotMatch(visibleMarkup, /Løsning til jeres arbejdsplads|Prisen opdateres automatisk/i);
   assert.match(script[1], /extraProducts/);
-  assert.match(script[1], /bedre enhedspris/);
-  assert.match(script[1], /Næste prisgruppe/);
+  assert.match(script[1], /Bestil .*produkter yderligere og få en bedre stykpris/);
+  assert.doesNotMatch(visibleMarkup, /Næste prisgruppe/);
   assert.match(script[1], /EUR-palle/);
   assert.match(script[1], /Levering i alt/);
   assert.match(script[1], /"Kommentar:"/);
@@ -136,10 +144,14 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
   assert.match(html, /Build your order/);
   assert.match(html, /Invoice email/);
   assert.match(html, /Phone number/);
+  assert.match(html, /Delivery address/);
   assert.match(html, /CVR/);
   assert.match(html, /Price group · Standard/);
   assert.match(html, /Save this quote and send it to Frankly\./);
   assert.doesNotMatch(html, /Copy quote/);
+  assert.match(html, /Unit price/);
+  assert.doesNotMatch(html, /Stykpris/);
+  assert.match(html, /Order .*additional products and get a better unit price/);
   assert.match(html, /<option value="once">One-time order<\/option>/);
   assert.match(html, /Not applicable/);
   assert.match(html, /250 ml spinach/);
@@ -149,6 +161,15 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
   assert.match(html, /Total delivery/);
   assert.match(html, /EUR pallet/);
   assert.doesNotMatch(html, /Sammensæt|Jeres behov|Prisgruppe|Leveringsfrekvens|Kopiér|Tilbudsnummer|Postnummer|Éngangsbestilling|Ikke relevant|bestillingen/);
+});
+
+test("Jeres behov står efter den første produktvariant og før de resterende", () => {
+  const html = buildCustomerHtml();
+  const firstProductSlot = html.indexOf('id="firstProductGrid"');
+  const needsHeading = html.indexOf('id="form-title"');
+  const remainingProducts = html.indexOf('id="remainingProductGrid"');
+  assert.ok(firstProductSlot !== -1 && firstProductSlot < needsHeading);
+  assert.ok(needsHeading < remainingProducts);
 });
 
 test("kundeversionen indeholder kun de 13 aftalte SKU'er", () => {

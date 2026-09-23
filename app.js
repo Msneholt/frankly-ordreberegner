@@ -432,26 +432,23 @@ const CUSTOMER_ENGLISH_REPLACEMENTS = [
   ["Frankly · Ordreberegner", "Frankly · Order Calculator"],
   ["Sammensæt jeres løsning", "Build your order"],
   ["Jeres behov", "Your requirements"],
-  ["Virksomhedsnavn", "Company name"],
   ["Virksomhed", "Company"],
   ["Faktureringsmail ikke angivet", "Invoice email not entered"],
   ["Telefonnummer ikke angivet", "Phone number not entered"],
   ["CVR ikke angivet", "CVR not entered"],
   ["Faktureringsmail", "Invoice email"],
   ["Telefonnummer", "Phone number"],
-  ["fakturering@virksomhed.dk", "billing@company.com"],
-  ["Fx T-2026-001", "E.g. Q-2026-001"],
-  ["placeholder=\"Navn\"", "placeholder=\"Name\""],
   ["Kundens virksomhed", "Customer company"],
   ["Kontaktperson ikke angivet", "Contact person not entered"],
   ["Postnummer ikke angivet", "Postal code not entered"],
+  ["Leveringsadresse ikke angivet", "Delivery address not entered"],
+  ["Leveringsadresse", "Delivery address"],
   ["Tilbudsnummer (valgfrit)", "Quote number (optional)"],
   ["Antal medarbejdere", "Number of employees"],
   ["Leveringsfrekvens", "Delivery frequency"],
   ["Éngangsbestilling", "One-time order"],
   ["Ikke relevant", "Not applicable"],
   ["Kommentar til tilbuddet", "Quote comments"],
-  ["Fx ønsker til levering, sortiment eller opstart", "E.g. delivery, selection or start date"],
   ["95 DKK: 1000–2999 · 145 DKK: 3000–4000 · Gratis fra 2.250 DKK · 4001–9999: 595 DKK + 135 DKK EUR-palle", "DKK 95: 1000–2999 · DKK 145: 3000–4000 · Free from DKK 2,250 · 4001–9999: DKK 595 + DKK 135 EUR pallet"],
   ["Produkter pr. levering", "Products per delivery"],
   ["Produkter i bestillingen", "Products in the order"],
@@ -472,8 +469,8 @@ const CUSTOMER_ENGLISH_REPLACEMENTS = [
   ["Prisgruppe", "Price group"],
   ["Medarbejdere", "Employees"],
   ["<p class=\"clean-quote-label\">Til</p>", "<p class=\"clean-quote-label\">To</p>"],
-  ["<thead><tr><th>Produkt</th><th>Antal pr. levering</th><th>Pris pr. stk.</th><th>Beløb</th></tr></thead>", "<thead><tr><th>Product</th><th>Quantity per delivery</th><th>Price per unit</th><th>Amount</th></tr></thead>"],
-  ["<thead><tr><th>Produkt</th><th>Antal</th><th>Stk.</th><th>Beløb</th></tr></thead>", "<thead><tr><th>Product</th><th>Quantity</th><th>Unit price</th><th>Amount</th></tr></thead>"],
+  ["<thead><tr><th>Produkt</th><th>Antal pr. levering</th><th>Stykpris</th><th>Beløb</th></tr></thead>", "<thead><tr><th>Product</th><th>Quantity per delivery</th><th>Unit price</th><th>Amount</th></tr></thead>"],
+  ["<thead><tr><th>Produkt</th><th>Antal</th><th>Stykpris</th><th>Beløb</th></tr></thead>", "<thead><tr><th>Product</th><th>Quantity</th><th>Unit price</th><th>Amount</th></tr></thead>"],
   ["Vælg produkter for at se tilbuddet.", "Select products to see the quote."],
   ["Alle priser er i DKK og ekskl. moms, medmindre andet er angivet. Frankly bekræfter det endelige sortiment og levering.", "All prices are in DKK and exclude VAT unless otherwise stated. Frankly confirms the final selection and delivery."],
   ["Kundens virksomhed", "Customer company"],
@@ -484,7 +481,9 @@ const CUSTOMER_ENGLISH_REPLACEMENTS = [
   ["Total inkl. 25 % moms", "Total incl. 25% VAT"],
   ["Total inkl. moms", "Total incl. VAT"],
   ["Moms 25 %", "VAT 25%"],
-  ["Næste prisgruppe", "Next price group"],
+  ["Bestil ", "Order "],
+  [" produkter yderligere og få en bedre stykpris.", " additional products and get a better unit price."],
+  ["Stykpris", "Unit price"],
   ["samme produktmix, hele pakker", "same product mix, full packs"],
   ["pr. levering til en bedre enhedspris", "per delivery for a better unit price"],
   ["i bestillingen til en bedre enhedspris", "in the order for a better unit price"],
@@ -503,6 +502,7 @@ const CUSTOMER_ENGLISH_REPLACEMENTS = [
   ["Virksomhed:", "Company:"],
   ["Kontaktperson:", "Contact person:"],
   ["Postnummer:", "Postal code:"],
+  ["Leveringsadresse:", "Delivery address:"],
   ["Levering:", "Delivery:"],
   ["Levering i alt", "Total delivery"],
   ["EUR-palle", "EUR pallet"],
@@ -580,7 +580,7 @@ async function downloadCustomerVersion(language = "da") {
   <style>
     :root{--ink:#10241a;--muted:#5f6e65;--green:#174c36;--green-dark:#113b2a;--green-soft:#e9f2ec;--cream:#f6f3e9;--paper:#fffdf7;--line:#dfe5df;--accent:#b7e3c5;--error:#a43b2e;--error-bg:#fff0ed}
     *{box-sizing:border-box}html{color-scheme:light}body{margin:0;color:var(--ink);background:var(--cream);font-family:"Avenir Next",Avenir,"Trebuchet MS",system-ui,sans-serif;-webkit-font-smoothing:antialiased}button,input,select,textarea{font:inherit}button{cursor:pointer}.page{width:min(1080px,calc(100% - 32px));margin:0 auto;padding:28px 0 56px}.topbar{display:flex;align-items:center;padding-bottom:24px;border-bottom:1px solid rgba(23,76,54,.15)}.brand-logo{display:block;width:162px;height:38px;object-fit:cover;object-position:center}.logo-word{color:var(--green);font-size:28px;font-weight:950;letter-spacing:.08em}.intro{padding:36px 0 24px}h1{margin:0;font-size:clamp(36px,5vw,52px);line-height:1;letter-spacing:-.045em}.workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,.72fr);gap:18px;align-items:start}.card{border:1px solid rgba(23,76,54,.12);border-radius:22px;background:var(--paper);box-shadow:0 16px 50px rgba(23,76,54,.08)}.form-card{padding:26px}.form-title{margin:0 0 16px;font-size:20px;letter-spacing:-.025em}.identity-grid,.setup-grid{display:grid;gap:10px}.identity-grid{grid-template-columns:1.15fr 1fr;margin-bottom:10px}.setup-grid{grid-template-columns:1fr 1fr}.field{display:flex;flex-direction:column;gap:6px}.field>span,.product-label{color:var(--muted);font-size:11px;font-weight:800}.field input,.field select,.field textarea,.product-field input{width:100%;min-height:46px;padding:10px 12px;border:1px solid #bdcbc1;border-radius:10px;outline:0;color:var(--ink);background:#fff;font-size:15px;font-weight:700}.field input:focus,.field select:focus,.field textarea:focus,.product-field:focus-within{border-color:#2f7454;box-shadow:0 0 0 3px rgba(47,116,84,.1)}.postal-note{color:#819087;font-size:9px;line-height:1.35}.setup-grid{margin:18px 0 20px;padding:15px;border-radius:14px;background:var(--green-soft)}.product-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.product-field{padding:12px;border:1px solid var(--line);border-radius:12px;background:#fbfaf4}.quantity-control{display:grid;grid-template-columns:1fr auto;align-items:end;gap:8px;margin-top:8px}.product-field input{min-height:auto;margin:0;padding:0;border:0;border-radius:0;background:transparent;font-size:24px}.quantity-unit{padding-bottom:2px;color:var(--green);font-size:13px;font-weight:850}.pack-note{display:block;margin-top:4px;color:#819087;font-size:10px}.customer-comment{margin-top:16px}.customer-comment textarea{min-height:88px;resize:vertical;line-height:1.45}.result-card{position:sticky;top:18px;overflow:hidden;color:#fff;background:var(--green-dark)}.result-main{padding:26px}.result-heading{display:flex;align-items:center;justify-content:space-between;gap:14px}.result-main h2{margin:0;font-size:27px;letter-spacing:-.04em}.tier-badge{padding:7px 10px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:#dcebe1;background:rgba(255,255,255,.07);font-size:10px;font-weight:850;white-space:nowrap}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}.metric{padding:14px;border:1px solid rgba(255,255,255,.13);border-radius:12px;background:rgba(255,255,255,.06)}.metric:first-child{grid-column:1/-1;background:var(--accent);color:var(--green-dark)}.metric span{display:block;margin-bottom:5px;color:#a9c8b5;font-size:9px;font-weight:800;line-height:1.35;text-transform:uppercase}.metric:first-child span{color:#41624f}.metric strong{display:block;font-size:22px;letter-spacing:-.035em}.metric:first-child strong{font-size:31px}.price-step{margin:0 0 16px;padding:12px;border-radius:10px;color:var(--green-dark);background:var(--accent);line-height:1.4}.price-step-label,.price-step-detail{display:block}.price-step-label{margin-bottom:3px;font-size:9px;font-weight:850;letter-spacing:.06em;text-transform:uppercase}.price-step strong{display:block;font-size:14px}.price-step-detail{margin-top:4px;color:#41624f;font-size:10px;font-weight:700}.order-lines{width:100%;border-collapse:collapse}.order-lines th,.order-lines td{padding:10px 5px;border-bottom:1px solid rgba(255,255,255,.12);font-size:11px;text-align:right}.order-lines th{color:#9ab8a5;font-size:8px;text-transform:uppercase}.order-lines th:first-child,.order-lines td:first-child{text-align:left}.totals{margin-top:15px}.total-row{display:flex;justify-content:space-between;gap:20px;padding:5px 0;color:#b9d1c1;font-size:11px}.total-row strong{color:#fff}.total-row.grand{margin-top:6px;padding-top:12px;border-top:1px solid rgba(255,255,255,.28);font-size:14px}.comment-preview{margin:12px 0 0;padding:11px 12px;border-radius:9px;background:rgba(255,255,255,.08)}.comment-preview span{display:block;color:#a9c8b5;font-size:9px;font-weight:850;text-transform:uppercase}.comment-preview p{margin:4px 0 0;white-space:pre-wrap;font-size:10px;line-height:1.5}.delivery-message{margin:12px 0 0;padding:9px 10px;border-radius:9px;color:#dcebe1;background:rgba(255,255,255,.08);font-size:10px;line-height:1.45}.notice{margin:12px 0 0;padding:10px;border-radius:9px;color:#ffe0d9;background:rgba(164,59,46,.28);font-size:10px;line-height:1.45}.result-footer{padding:16px 26px 24px;background:rgba(0,0,0,.11)}.result-footer p{margin:0 0 12px;color:#b9d1c1;font-size:10px;line-height:1.5}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{min-height:42px;padding:0 12px;border-radius:10px;font-size:11px;font-weight:850}.secondary{border:1px solid rgba(255,255,255,.26);color:#fff;background:transparent}.secondary:hover{background:rgba(255,255,255,.08)}.primary{border:0;color:var(--green-dark);background:var(--accent)}.primary:hover{background:#c9ead3}.clean-quote{display:none;width:100%;min-height:297mm;padding:14mm 12mm;color:#183026;background:#fff;font-family:Arial,sans-serif}.clean-quote-header{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:22px;border-bottom:2px solid var(--green-dark)}.clean-quote-header h1{margin:0 0 5px;font-size:30px}.clean-quote-header p{margin:0;color:var(--muted);font-size:11px}.clean-quote-parties{display:grid;grid-template-columns:1.25fr 1fr;gap:34px;padding:24px 0}.clean-quote-label{margin:0 0 7px;color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase}.clean-quote-parties p{margin:0 0 5px;font-size:12px}.clean-quote-meta{display:grid;gap:6px}.clean-quote-meta p{display:flex;justify-content:space-between;gap:18px;padding-bottom:5px;border-bottom:1px solid #e2e8e3}.clean-quote-meta span{color:var(--muted)}.clean-quote-table{width:100%;border-collapse:collapse}.clean-quote-table th,.clean-quote-table td{padding:10px 8px;border-bottom:1px solid #e2e8e3;font-size:11px;text-align:right}.clean-quote-table th{background:#f3f5f1;color:var(--muted);font-size:9px;text-transform:uppercase}.clean-quote-table th:first-child,.clean-quote-table td:first-child{text-align:left}.clean-quote-totals{width:360px;max-width:100%;margin:18px 0 0 auto}.clean-quote-total{display:flex;justify-content:space-between;gap:20px;padding:6px 0;font-size:11px}.clean-quote-total.grand{margin-top:5px;padding-top:10px;border-top:2px solid var(--green-dark);font-size:14px}.clean-quote-highlights{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:24px}.clean-quote-highlight{padding:13px;border-radius:10px;background:var(--green-soft)}.clean-quote-highlight span{display:block;margin-bottom:5px;color:var(--muted);font-size:8px;font-weight:800;text-transform:uppercase}.clean-quote-highlight strong{font-size:15px}.clean-quote-next,.clean-quote-comment{margin-top:16px;padding:12px 14px;border-left:3px solid #2f7454;background:#f4f7f3}.clean-quote-next span,.clean-quote-comment span{display:block;color:var(--muted);font-size:8px;font-weight:800;text-transform:uppercase}.clean-quote-next strong{display:block;margin-top:5px;font-size:11px}.clean-quote-comment p{margin:5px 0 0;white-space:pre-wrap;font-size:10px;line-height:1.55}.clean-quote-note{margin-top:24px;padding-top:14px;border-top:1px solid #dfe5df;color:var(--muted);font-size:9px;line-height:1.5}.toast{position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:10px;color:#fff;background:#10241a;box-shadow:0 12px 36px rgba(0,0,0,.2);font-size:12px;font-weight:750;opacity:0;pointer-events:none;transform:translateY(7px);transition:180ms}.toast.show{opacity:1;transform:translateY(0)}
-    .employee-field{gap:8px}.not-applicable{display:flex;align-items:center;gap:7px;color:var(--green-dark);font-size:12px;font-weight:800}.not-applicable input{width:16px;height:16px;min-height:16px;margin:0;padding:0;border:0;box-shadow:none;accent-color:var(--green-dark)}.field input:disabled{color:#819087;background:#eef1ed}
+    .first-product-grid{grid-template-columns:1fr;margin-bottom:20px}.needs-block{margin:0 0 20px}.employee-field{gap:8px}.not-applicable{display:flex;align-items:center;gap:7px;color:var(--green-dark);font-size:12px;font-weight:800}.not-applicable input{width:16px;height:16px;min-height:16px;margin:0;padding:0;border:0;box-shadow:none;accent-color:var(--green-dark)}.field input:disabled{color:#819087;background:#eef1ed}
     .result-card{color:var(--ink);background:var(--paper)}.tier-badge{border-color:#bdcbc1;color:var(--green-dark);background:var(--green-soft)}.product-total{display:flex;align-items:baseline;justify-content:space-between;gap:18px;margin-top:16px;padding:13px 14px;border:1px solid #cdd9d0;border-radius:12px;background:var(--green-soft)}.product-total span{color:#41624f;font-size:10px;font-weight:850;text-transform:uppercase}.product-total strong{color:var(--green-dark);font-size:24px;letter-spacing:-.035em}.metric{border-color:var(--line);background:#fbfaf4}.metric:first-child{background:var(--accent)}.metric span{color:var(--muted)}.order-lines th,.order-lines td{border-color:var(--line)}.order-lines th{color:var(--muted)}.total-row{color:var(--muted)}.total-row strong{color:var(--ink)}.total-row.grand{border-color:#aebeb3}.comment-preview{border:1px solid var(--line);background:var(--green-soft)}.comment-preview span{color:var(--muted)}.delivery-message{color:var(--green-dark);background:var(--green-soft)}.result-footer{background:#f1eddf}.result-footer p{color:#41624f;font-size:12px;font-weight:750}.secondary{border-color:#9eb2a4;color:var(--green-dark);background:transparent}.secondary:hover{background:var(--green-soft)}.primary{color:#fff;background:var(--green-dark)}.primary:hover{background:#174c36}
     @media(max-width:820px){.workspace{grid-template-columns:1fr}.result-card{position:static}}
     @media(max-width:560px){.page{width:min(100% - 20px,1080px);padding-top:18px}.topbar{padding-bottom:18px}.brand-logo{width:140px;height:32px}.intro{padding:32px 0 22px}h1{font-size:41px}.form-card,.result-main{padding:20px}.identity-grid,.setup-grid,.product-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.metric:first-child{grid-column:auto}.actions{grid-template-columns:1fr}.primary{grid-column:auto}}
@@ -599,22 +599,28 @@ async function downloadCustomerVersion(language = "da") {
 
     <div class="workspace">
       <section class="card form-card" aria-labelledby="form-title">
-        <h2 id="form-title" class="form-title">Jeres behov</h2>
-        <div class="identity-grid">
-          <label class="field"><span>Virksomhed</span><input id="company" type="text" placeholder="Virksomhedsnavn" autocomplete="organization"></label>
-          <label class="field"><span>Kontaktperson</span><input id="contact" type="text" placeholder="Navn" autocomplete="name"></label>
-          <label class="field"><span>CVR</span><input id="cvr" type="text" inputmode="numeric" maxlength="8" placeholder="12345678"></label>
-          <label class="field"><span>Faktureringsmail</span><input id="invoiceEmail" type="email" placeholder="fakturering@virksomhed.dk" autocomplete="email"></label>
-          <label class="field"><span>Telefonnummer</span><input id="phone" type="tel" placeholder="+45 12 34 56 78" autocomplete="tel"></label>
-          <label class="field"><span>Postnummer</span><input id="postalCode" type="text" inputmode="numeric" maxlength="4" placeholder="2100" autocomplete="postal-code"><small class="postal-note">95 DKK: 1000–2999 · 145 DKK: 3000–4000 · Gratis fra 2.250 DKK · 4001–9999: 595 DKK + 135 DKK EUR-palle</small></label>
-          <label class="field"><span>Tilbudsnummer (valgfrit)</span><input id="offerNumber" type="text" placeholder="Fx T-2026-001"></label>
+        <div id="productGrid">
+          <div id="firstProductGrid" class="product-grid first-product-grid"></div>
+          <div class="needs-block">
+            <h2 id="form-title" class="form-title">Jeres behov</h2>
+            <div class="identity-grid">
+              <label class="field"><span>Virksomhed</span><input id="company" type="text" placeholder="XYZ" autocomplete="organization"></label>
+              <label class="field"><span>Kontaktperson</span><input id="contact" type="text" placeholder="XYZ" autocomplete="name"></label>
+              <label class="field"><span>CVR</span><input id="cvr" type="text" inputmode="numeric" maxlength="8" placeholder="123"></label>
+              <label class="field"><span>Faktureringsmail</span><input id="invoiceEmail" type="email" placeholder="XYZ" autocomplete="email"></label>
+              <label class="field"><span>Telefonnummer</span><input id="phone" type="tel" placeholder="123" autocomplete="tel"></label>
+              <label class="field"><span>Postnummer</span><input id="postalCode" type="text" inputmode="numeric" maxlength="4" placeholder="123" autocomplete="postal-code"><small class="postal-note">95 DKK: 1000–2999 · 145 DKK: 3000–4000 · Gratis fra 2.250 DKK · 4001–9999: 595 DKK + 135 DKK EUR-palle</small></label>
+              <label class="field"><span>Leveringsadresse</span><input id="deliveryAddress" type="text" placeholder="XYZ" autocomplete="street-address"></label>
+              <label class="field"><span>Tilbudsnummer (valgfrit)</span><input id="offerNumber" type="text" placeholder="123"></label>
+            </div>
+            <div class="setup-grid">
+              <div class="field employee-field"><span>Antal medarbejdere</span><input id="employees" type="number" min="1" step="1" value="10" inputmode="numeric"><label class="not-applicable"><input id="employeesNotApplicable" type="checkbox"> <span>Ikke relevant</span></label></div>
+              <label class="field"><span>Leveringsfrekvens</span><select id="cadence"><option value="1">Hver uge</option><option value="2">Hver 2. uge</option><option value="3">Hver 3. uge</option><option value="4">Hver 4. uge</option><option value="once">Éngangsbestilling</option></select></label>
+            </div>
+          </div>
+          <div id="remainingProductGrid" class="product-grid"></div>
         </div>
-        <div class="setup-grid">
-          <div class="field employee-field"><span>Antal medarbejdere</span><input id="employees" type="number" min="1" step="1" value="10" inputmode="numeric"><label class="not-applicable"><input id="employeesNotApplicable" type="checkbox"> <span>Ikke relevant</span></label></div>
-          <label class="field"><span>Leveringsfrekvens</span><select id="cadence"><option value="1">Hver uge</option><option value="2">Hver 2. uge</option><option value="3">Hver 3. uge</option><option value="4">Hver 4. uge</option><option value="once">Éngangsbestilling</option></select></label>
-        </div>
-        <div id="productGrid" class="product-grid"></div>
-        <label class="field customer-comment"><span>Kommentar til tilbuddet</span><textarea id="customerComment" rows="3" placeholder="Fx ønsker til levering, sortiment eller opstart"></textarea></label>
+        <label class="field customer-comment"><span>Kommentar til tilbuddet</span><textarea id="customerComment" rows="3" placeholder="XYZ"></textarea></label>
       </section>
 
       <aside class="card result-card" aria-live="polite">
@@ -628,7 +634,7 @@ async function downloadCustomerVersion(language = "da") {
           </div>
           <div id="nextPriceNotice" class="price-step" hidden></div>
           <table class="order-lines">
-            <thead><tr><th>Produkt</th><th>Antal</th><th>Stk.</th><th>Beløb</th></tr></thead>
+            <thead><tr><th>Produkt</th><th>Antal</th><th>Stykpris</th><th>Beløb</th></tr></thead>
             <tbody id="orderRows"><tr><td colspan="4">Vælg produkter for at se oversigten.</td></tr></tbody>
           </table>
           <div id="totals" class="totals"></div>
@@ -659,6 +665,7 @@ async function downloadCustomerVersion(language = "da") {
           <p id="cleanQuoteInvoiceEmail">Faktureringsmail ikke angivet</p>
           <p id="cleanQuotePhone">Telefonnummer ikke angivet</p>
           <p id="cleanQuotePostalCode">Postnummer ikke angivet</p>
+          <p id="cleanQuoteDeliveryAddress">Leveringsadresse ikke angivet</p>
         </div>
         <div class="clean-quote-meta">
           <p id="cleanQuoteOfferRow" hidden><span>Tilbudsnummer</span><strong id="cleanQuoteOfferNumber"></strong></p>
@@ -668,7 +675,7 @@ async function downloadCustomerVersion(language = "da") {
         </div>
       </section>
       <table class="clean-quote-table">
-        <thead><tr><th>Produkt</th><th id="cleanQuoteQuantityHeading">Antal pr. levering</th><th>Pris pr. stk.</th><th>Beløb</th></tr></thead>
+        <thead><tr><th>Produkt</th><th id="cleanQuoteQuantityHeading">Antal pr. levering</th><th>Stykpris</th><th>Beløb</th></tr></thead>
         <tbody id="cleanQuoteRows"><tr><td colspan="4">Vælg produkter for at se tilbuddet.</td></tr></tbody>
       </table>
       <div class="clean-quote-totals" id="cleanQuoteTotals"></div>
@@ -677,7 +684,7 @@ async function downloadCustomerVersion(language = "da") {
         <div class="clean-quote-highlight"><span>Enheder pr. medarbejder / uge</span><strong id="cleanQuoteUnitsPerEmployee">0</strong></div>
         <div class="clean-quote-highlight"><span id="cleanQuotePerDeliveryLabel">Pris pr. levering</span><strong id="cleanQuotePerDelivery">—</strong></div>
       </div>
-      <div id="cleanQuoteNext" class="clean-quote-next" hidden><span>Næste prisgruppe</span><strong id="cleanQuoteNextText"></strong></div>
+      <div id="cleanQuoteNext" class="clean-quote-next" hidden><strong id="cleanQuoteNextText"></strong></div>
       <div id="cleanQuoteComment" class="clean-quote-comment" hidden><span>Kommentar</span><p id="cleanQuoteCommentText"></p></div>
       <p class="clean-quote-note">Alle priser er i DKK og ekskl. moms, medmindre andet er angivet. Frankly bekræfter det endelige sortiment og levering.</p>
     </article>
@@ -709,6 +716,7 @@ async function downloadCustomerVersion(language = "da") {
         var employees=Math.max(1,Math.floor(Number(document.getElementById("employees").value)||1));
         var employeesRelevant=!document.getElementById("employeesNotApplicable").checked;
         var postalCode=document.getElementById("postalCode").value.trim();
+        var deliveryAddress=document.getElementById("deliveryAddress").value.trim();
         var company=document.getElementById("company").value.trim();
         var contact=document.getElementById("contact").value.trim();
         var cvr=document.getElementById("cvr").value.trim();
@@ -733,7 +741,7 @@ async function downloadCustomerVersion(language = "da") {
         var totalDelivery=pricedSubtotal+fee;
         var totalWeekly=totalDelivery/cadence;
         var priceGap=calculateNextPriceGap(tiers,products,quantities,cadence);
-        return {cadence:cadence,oneTime:oneTime,employees:employees,employeesRelevant:employeesRelevant,postalCode:postalCode,company:company,contact:contact,cvr:cvr,invoiceEmail:invoiceEmail,phone:phone,offerNumber:offerNumber,comment:comment,tier:tier,unitsDelivery:unitsDelivery,unitsWeekly:unitsDelivery/cadence,pricedSubtotal:pricedSubtotal,hasProducts:hasProducts,fee:fee,deliveryCharge:deliveryCharge,palletFee:palletFee,feeKnown:feeKnown,freeDelivery:freeDelivery,remoteDelivery:remoteDelivery,priceReady:priceReady,totalDelivery:totalDelivery,totalWeekly:totalWeekly,priceGap:priceGap};
+        return {cadence:cadence,oneTime:oneTime,employees:employees,employeesRelevant:employeesRelevant,postalCode:postalCode,deliveryAddress:deliveryAddress,company:company,contact:contact,cvr:cvr,invoiceEmail:invoiceEmail,phone:phone,offerNumber:offerNumber,comment:comment,tier:tier,unitsDelivery:unitsDelivery,unitsWeekly:unitsDelivery/cadence,pricedSubtotal:pricedSubtotal,hasProducts:hasProducts,fee:fee,deliveryCharge:deliveryCharge,palletFee:palletFee,feeKnown:feeKnown,freeDelivery:freeDelivery,remoteDelivery:remoteDelivery,priceReady:priceReady,totalDelivery:totalDelivery,totalWeekly:totalWeekly,priceGap:priceGap};
       }
       function cadenceText(cadence,oneTime){return oneTime?"Éngangsbestilling":cadence===1?"Hver uge":"Hver "+cadence+". uge";}
       function deliveryRows(state,rowClass,deliveryText){if(state.remoteDelivery){return '<div class="'+rowClass+'"><span>Levering</span><strong>'+money.format(state.deliveryCharge)+' DKK</strong></div><div class="'+rowClass+'"><span>EUR-palle</span><strong>'+money.format(state.palletFee)+' DKK</strong></div><div class="'+rowClass+'"><span>Levering i alt</span><strong>'+money.format(state.fee)+' DKK</strong></div>';}return '<div class="'+rowClass+'"><span>Levering</span><strong>'+deliveryText+'</strong></div>';}
@@ -744,6 +752,7 @@ async function downloadCustomerVersion(language = "da") {
         document.getElementById("cleanQuoteInvoiceEmail").textContent=state.invoiceEmail||"Faktureringsmail ikke angivet";
         document.getElementById("cleanQuotePhone").textContent=state.phone||"Telefonnummer ikke angivet";
         document.getElementById("cleanQuotePostalCode").textContent=state.postalCode?"Postnummer "+state.postalCode:"Postnummer ikke angivet";
+        document.getElementById("cleanQuoteDeliveryAddress").textContent=state.deliveryAddress||"Leveringsadresse ikke angivet";
         var offerRow=document.getElementById("cleanQuoteOfferRow");offerRow.hidden=!state.offerNumber;document.getElementById("cleanQuoteOfferNumber").textContent=state.offerNumber;
         document.getElementById("cleanQuoteTier").textContent=state.tier.name;
         document.getElementById("cleanQuoteCadence").textContent=cadenceText(state.cadence,state.oneTime);
@@ -756,7 +765,7 @@ async function downloadCustomerVersion(language = "da") {
         document.getElementById("cleanQuoteUnitsPerEmployee").textContent=employeeMetricsReady?number.format(state.unitsWeekly/state.employees):"Ikke relevant";
         document.getElementById("cleanQuotePerDeliveryLabel").textContent=state.oneTime?"Pris pr. bestilling":"Pris pr. levering";
         document.getElementById("cleanQuotePerDelivery").textContent=totalText;
-        var cleanNext=document.getElementById("cleanQuoteNext");cleanNext.hidden=!state.priceGap.available;if(state.priceGap.available){var cleanNextTier=tiers[state.priceGap.nextTierIndex];document.getElementById("cleanQuoteNextText").textContent=integers.format(state.priceGap.extraProducts)+" ekstra produkter "+(state.oneTime?"i bestillingen til ":"pr. levering til ")+cleanNextTier.name+" (samme produktmix, hele pakker).";}
+        var cleanNext=document.getElementById("cleanQuoteNext");cleanNext.hidden=!state.priceGap.available;if(state.priceGap.available){document.getElementById("cleanQuoteNextText").textContent="Bestil "+integers.format(state.priceGap.extraProducts)+" produkter yderligere og få en bedre stykpris.";}
         var cleanComment=document.getElementById("cleanQuoteComment");cleanComment.hidden=!state.comment;document.getElementById("cleanQuoteCommentText").textContent=state.comment;
       }
       function render(){
@@ -771,7 +780,7 @@ async function downloadCustomerVersion(language = "da") {
         document.getElementById("perDelivery").textContent=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";
         document.getElementById("productTotalLabel").textContent=state.oneTime?"Produkter i bestillingen":"Produkter pr. levering";
         document.getElementById("productTotal").textContent=integers.format(state.unitsDelivery)+" stk.";
-        var priceNotice=document.getElementById("nextPriceNotice");priceNotice.hidden=!state.priceGap.available;if(state.priceGap.available){var productWord=state.priceGap.extraProducts===1?"produkt":"produkter";var nextTier=tiers[state.priceGap.nextTierIndex];var extraMix=products.map(function(product){var extra=(state.priceGap.targetQuantities[product.key]||0)-quantity(product);return {label:product.label,extra:extra};}).filter(function(item){return item.extra>0;}).map(function(item){return "+"+integers.format(item.extra)+" "+safe(item.label);}).join(" · ");priceNotice.innerHTML='<span class="price-step-label">Næste prisgruppe · '+safe(nextTier.name)+'</span><strong>'+integers.format(state.priceGap.extraProducts)+' ekstra '+productWord+' '+(state.oneTime?'i bestillingen til en bedre enhedspris':'pr. levering til en bedre enhedspris')+'</strong><span class="price-step-detail">'+extraMix+'</span>';}
+        var priceNotice=document.getElementById("nextPriceNotice");priceNotice.hidden=!state.priceGap.available;if(state.priceGap.available){priceNotice.innerHTML='<strong>Bestil '+integers.format(state.priceGap.extraProducts)+' produkter yderligere og få en bedre stykpris.</strong>';}
         var selected=products.filter(function(product){return quantity(product)>0;});
         document.getElementById("orderRows").innerHTML=selected.length?selected.map(function(product){
           var amount=quantity(product);var price=customerProductPrice(product,state.tier);
@@ -787,17 +796,19 @@ async function downloadCustomerVersion(language = "da") {
         var state=getState();var company=state.company||"Ikke angivet";var contact=state.contact||"Ikke angivet";var postalCode=state.postalCode||"Ikke angivet";
         var lines=["FRANKLY · PRISTILBUD"];
         if(state.offerNumber)lines.push("Tilbudsnummer: "+state.offerNumber);
-        lines.push("Virksomhed: "+company,"Kontaktperson: "+contact,"CVR: "+(state.cvr||"Ikke angivet"),"Faktureringsmail: "+(state.invoiceEmail||"Ikke angivet"),"Telefonnummer: "+(state.phone||"Ikke angivet"),"Postnummer: "+postalCode,"Antal medarbejdere: "+(state.employeesRelevant?integers.format(state.employees):"Ikke relevant"),"Levering: "+cadenceText(state.cadence,state.oneTime),"Prisgruppe: "+state.tier.name,"",state.oneTime?"Produkter i bestillingen:":"Produkter pr. levering:");
+        lines.push("Virksomhed: "+company,"Kontaktperson: "+contact,"CVR: "+(state.cvr||"Ikke angivet"),"Faktureringsmail: "+(state.invoiceEmail||"Ikke angivet"),"Telefonnummer: "+(state.phone||"Ikke angivet"),"Postnummer: "+postalCode,"Leveringsadresse: "+(state.deliveryAddress||"Ikke angivet"),"Antal medarbejdere: "+(state.employeesRelevant?integers.format(state.employees):"Ikke relevant"),"Levering: "+cadenceText(state.cadence,state.oneTime),"Prisgruppe: "+state.tier.name,"",state.oneTime?"Produkter i bestillingen:":"Produkter pr. levering:");
         var selected=products.filter(function(product){return quantity(product)>0;});
         if(!selected.length)lines.push("Ingen produkter valgt");
         selected.forEach(function(product){var amount=quantity(product);var price=customerProductPrice(product,state.tier);lines.push("- "+product.label+": "+integers.format(amount)+" stk."+(price==null?" · pris aftales":" × "+money.format(price)+" DKK = "+money.format(amount*price)+" DKK"));});
         var deliverySummary=!state.hasProducts?money.format(0)+" DKK":state.freeDelivery?"Gratis":state.feeKnown?money.format(state.fee)+" DKK":"Aftales";var totalSummary=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";var totalVatSummary=state.priceReady?money.format(state.totalDelivery*1.25)+" DKK":"—";var employeeMetricsReady=state.employeesRelevant&&!state.oneTime;var employeeSummary=employeeMetricsReady?money.format(state.totalWeekly/state.employees)+" DKK ekskl. moms":"Ikke relevant";var employeeUnitsSummary=employeeMetricsReady?number.format(state.unitsWeekly/state.employees):"Ikke relevant";
         lines.push("");if(state.remoteDelivery){lines.push("Levering: "+money.format(state.deliveryCharge)+" DKK","EUR-palle: "+money.format(state.palletFee)+" DKK","Levering i alt: "+money.format(state.fee)+" DKK");}else{lines.push("Levering: "+deliverySummary);}lines.push((state.oneTime?"Total for bestillingen ekskl. moms: ":"Total pr. levering ekskl. moms: ")+totalSummary,"Total inkl. moms: "+totalVatSummary,"Pris pr. medarbejder pr. uge: "+employeeSummary,"Enheder pr. medarbejder pr. uge: "+employeeUnitsSummary);
-        if(state.priceGap.available){var gapWord=state.priceGap.extraProducts===1?"produkt":"produkter";var summaryNextTier=tiers[state.priceGap.nextTierIndex];var summaryMix=products.map(function(product){var extra=(state.priceGap.targetQuantities[product.key]||0)-quantity(product);return extra>0?"+"+integers.format(extra)+" "+product.label:"";}).filter(Boolean).join(" · ");lines.push("Næste prisgruppe: "+summaryNextTier.name,"Mangler: "+integers.format(state.priceGap.extraProducts)+" ekstra "+gapWord+" "+(state.oneTime?"i bestillingen":"pr. levering"),"Fordeling: "+summaryMix);}
+        if(state.priceGap.available){lines.push("Bestil "+integers.format(state.priceGap.extraProducts)+" produkter yderligere og få en bedre stykpris.");}
         if(state.comment)lines.push("","Kommentar:",state.comment);
         lines.push("","Frankly bekræfter det endelige sortiment og levering.");return lines.join("\\n");
       }
-      productGrid.innerHTML=products.map(function(product){var saved=savedQuantities[product.key]||0;return '<label class="product-field"><span class="product-label">'+safe(product.label)+'</span><span class="quantity-control"><input type="number" min="0" step="'+product.step+'" value="'+saved+'" inputmode="numeric" data-product="'+product.key+'" aria-label="Antal '+safe(product.label)+' i stk. pr. levering"><span class="quantity-unit">stk.</span></span><span class="pack-note">Pakke á '+product.step+' stk.</span></label>';}).join("");
+      function productMarkup(product){var saved=savedQuantities[product.key]||0;return '<label class="product-field"><span class="product-label">'+safe(product.label)+'</span><span class="quantity-control"><input type="number" min="0" step="'+product.step+'" value="'+saved+'" inputmode="numeric" data-product="'+product.key+'" aria-label="Antal '+safe(product.label)+' i stk. pr. levering"><span class="quantity-unit">stk.</span></span><span class="pack-note">Pakke á '+product.step+' stk.</span></label>';}
+      document.getElementById("firstProductGrid").innerHTML=products.slice(0,1).map(productMarkup).join("");
+      document.getElementById("remainingProductGrid").innerHTML=products.slice(1).map(productMarkup).join("");
       document.addEventListener("input",function(event){if(event.target.matches("input,select,textarea"))render();});
       document.addEventListener("change",function(event){
         if(event.target.matches("[data-product]")){var step=Number(event.target.step)||1;var entered=Math.max(0,Math.floor(Number(event.target.value)||0));var normalized=Math.round(entered/step)*step;event.target.value=normalized;if(normalized!==entered)showToast("Antallet er tilpasset til en hel pakke: "+integers.format(normalized));}
