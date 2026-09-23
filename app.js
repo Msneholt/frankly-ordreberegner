@@ -411,12 +411,12 @@ async function downloadQuote() {
 }
 
 const CUSTOMER_PRODUCT_LABELS_EN = Object.freeze({
-  juice250_beetroot: "250 ml beetroot",
-  juice250_carrot: "250 ml carrot",
-  juice250_strawberry: "250 ml strawberry",
-  juice250_apple: "250 ml apple",
-  juice250_spinach: "250 ml spinach",
-  juice250_orange: "250 ml orange",
+  juice250_beetroot: "250 ml beetroot juice",
+  juice250_carrot: "250 ml carrot juice",
+  juice250_strawberry: "250 ml strawberry juice",
+  juice250_apple: "250 ml apple juice",
+  juice250_spinach: "250 ml spinach juice",
+  juice250_orange: "250 ml orange juice",
   smoothie250_avocado: "250 ml avocado smoothie",
   smoothie250_strawberry: "250 ml strawberry smoothie",
   smoothie250_mango: "250 ml mango smoothie",

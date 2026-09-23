@@ -16,12 +16,12 @@ export const CREDIT_PRODUCTS = [
 ];
 
 export const CUSTOMER_PRODUCTS = [
-  { key: "juice250_beetroot", label: "250 ml rødbede", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0 },
-  { key: "juice250_carrot", label: "250 ml gulerod", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0 },
-  { key: "juice250_strawberry", label: "250 ml jordbær", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0 },
-  { key: "juice250_apple", label: "250 ml æble", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0 },
-  { key: "juice250_spinach", label: "250 ml spinat", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0.5 },
-  { key: "juice250_orange", label: "250 ml appelsin", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0.75 },
+  { key: "juice250_beetroot", label: "250 ml rødbede juice", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0 },
+  { key: "juice250_carrot", label: "250 ml gulerod juice", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0 },
+  { key: "juice250_strawberry", label: "250 ml jordbær juice", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0 },
+  { key: "juice250_apple", label: "250 ml æble juice", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0 },
+  { key: "juice250_spinach", label: "250 ml spinat juice", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0.5 },
+  { key: "juice250_orange", label: "250 ml appelsin juice", weight: 1, step: 6, priceKey: "juice250", priceOffset: 0.75 },
   { key: "smoothie250_avocado", label: "250 ml avocado smoothie", weight: 1, step: 6, priceKey: "smoothie250", priceOffset: 0 },
   { key: "smoothie250_strawberry", label: "250 ml jordbær smoothie", weight: 1, step: 6, priceKey: "smoothie250", priceOffset: 0 },
   { key: "smoothie250_mango", label: "250 ml mango smoothie", weight: 1, step: 6, priceKey: "smoothie250", priceOffset: 0 },

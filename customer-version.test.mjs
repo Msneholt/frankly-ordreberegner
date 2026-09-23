@@ -177,6 +177,7 @@ test("kundeversionen indeholder kun de 13 aftalte SKU'er", () => {
   assert.equal(CUSTOMER_PRODUCTS.filter(product => product.priceKey === "shot60").length, 2);
   assert.equal(CUSTOMER_PRODUCTS.filter(product => product.priceKey === "energy340").length, 2);
   assert.equal(CUSTOMER_PRODUCTS.some(product => product.priceKey === "juice750" || product.key === "bib5000"), false);
+  assert.equal(CUSTOMER_PRODUCTS.filter(product => product.priceKey === "juice250").every(product => product.label.endsWith(" juice")), true);
 });
 
 test("kundeversionen beregner 250 ml-varianternes pristillæg korrekt", () => {
