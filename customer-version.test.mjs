@@ -116,8 +116,11 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(script[1], /60 ml gurkemeje\/chili shot/);
   assert.match(script[1], /340 ml passion energi/);
   assert.match(script[1], /340 ml lime\/citron energi/);
-  assert.match(script[1], /product\.key==="shot60_ginger"\?" category-start"/);
+  assert.match(script[1], /categoryStarts=\["smoothie250_avocado","shot60_ginger","energy340_passion"\]/);
+  assert.match(script[1], /categoryTopRows=.*"energy340_lime_lemon"/);
   assert.match(html, /\.product-field\.category-start\{grid-column:1\}/);
+  assert.match(html, /\.product-field\.category-gap\{margin-top:14px\}/);
+  assert.match(html, /\.product-field\.category-start\{margin-top:14px\}/);
   assert.doesNotMatch(html, /750 ml juice|5 L BiB/);
   assert.match(html, /<title>Frankly · Ordreberegner<\/title>/);
 });
