@@ -116,11 +116,9 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(script[1], /60 ml gurkemeje\/chili shot/);
   assert.match(script[1], /340 ml passion energi/);
   assert.match(script[1], /340 ml lime\/citron energi/);
-  assert.match(script[1], /categoryStarts=\["smoothie250_avocado","shot60_ginger","energy340_passion"\]/);
-  assert.match(script[1], /categoryTopRows=.*"energy340_lime_lemon"/);
-  assert.match(html, /\.product-field\.category-start\{grid-column:1\}/);
-  assert.match(html, /\.product-field\.category-gap\{margin-top:14px\}/);
-  assert.match(html, /\.product-field\.category-start\{margin-top:14px\}/);
+  assert.match(script[1], /productGroupLabels=\{juice250:"250 ml juice ØKO",smoothie250:"250 ml smoothie ØKO",shot60:"60 ml shot ØKO",energy340:"340 ml energi ØKO"\}/);
+  assert.match(script[1], /class="product-group-title"/);
+  assert.match(html, /\.product-group-title\{grid-column:1\/-1;margin:15px 0 1px/);
   assert.doesNotMatch(html, /750 ml juice|5 L BiB/);
   assert.match(html, /<title>Frankly · Ordreberegner<\/title>/);
 });
@@ -167,6 +165,11 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
   assert.doesNotMatch(html, /placeholder="(?:XYZ|123)"/);
   assert.match(html, /250 ml spinach/);
   assert.match(html, /340 ml lime\/lemon energy/);
+  assert.match(html, /250 ml organic juice/);
+  assert.match(html, /250 ml organic smoothie/);
+  assert.match(html, /60 ml organic shot/);
+  assert.match(html, /340 ml organic energy/);
+  assert.doesNotMatch(html, /ØKO/);
   assert.doesNotMatch(html, /Free from DKK 2,250|4001–9999: DKK 595/);
   assert.match(html, /Total delivery/);
   assert.match(html, /Total number of products/);
