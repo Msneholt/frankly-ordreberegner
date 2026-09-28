@@ -2,6 +2,7 @@ import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
 import {
   CUSTOMER_PRODUCTS,
+  CUSTOMER_PRODUCTS_WITH_750,
   DEFAULT_TIERS,
   calculateNextPriceGap,
   customerProductPrice,
@@ -38,9 +39,9 @@ const logo = readFileSync(new URL("./assets/frankly-logo-transparent.png", impor
 const logoMarkup = `<img class="brand-logo" src="data:image/png;base64,${logo}" alt="Frankly">`;
 const tiersJson = JSON.stringify(DEFAULT_TIERS.map(tier => ({ name: tier.name, min: tier.min, prices: tier.prices })));
 
-function customerPage(language) {
+function customerPage(language, productList = CUSTOMER_PRODUCTS) {
   const isEnglish = language === "en";
-  const products = CUSTOMER_PRODUCTS.map(product => ({
+  const products = productList.map(product => ({
     ...product,
     label: isEnglish ? translationContext.labels[product.key] || product.label : product.label,
     priced: Boolean(product.priceKey),
@@ -58,6 +59,8 @@ function customerPage(language) {
 
 mkdirSync("dist/ordreberegner", { recursive: true });
 mkdirSync("dist/order-calculator", { recursive: true });
+mkdirSync("dist/ordreberegner-750ml", { recursive: true });
+mkdirSync("dist/order-calculator-750ml", { recursive: true });
 mkdirSync("dist/assets", { recursive: true });
 for (const file of ["index.html", "app.js", "pricing.mjs", "styles.css"]) {
   copyFileSync(file, `dist/${file}`);
@@ -67,6 +70,8 @@ for (const file of ["frankly-logo-transparent.png", "frankly-logo.png"]) {
 }
 writeFileSync("dist/ordreberegner/index.html", customerPage("da"));
 writeFileSync("dist/order-calculator/index.html", customerPage("en"));
+writeFileSync("dist/ordreberegner-750ml/index.html", customerPage("da", CUSTOMER_PRODUCTS_WITH_750));
+writeFileSync("dist/order-calculator-750ml/index.html", customerPage("en", CUSTOMER_PRODUCTS_WITH_750));
 writeFileSync("dist/.nojekyll", "");
 
 console.log("Customer calculator pages generated.");

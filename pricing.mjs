@@ -31,6 +31,17 @@ export const CUSTOMER_PRODUCTS = [
   { key: "energy340_lime_lemon", label: "340 ml lime/citron energi", weight: 1, step: 6, priceKey: "energy340", priceOffset: 0 },
 ];
 
+export const CUSTOMER_PRODUCTS_750 = [
+  { key: "juice750_beetroot", label: "750 ml rødbede juice", weight: 2, step: 6, priceKey: "juice750", priceOffset: 0 },
+  { key: "juice750_carrot", label: "750 ml gulerod juice", weight: 2, step: 6, priceKey: "juice750", priceOffset: 0 },
+  { key: "juice750_strawberry", label: "750 ml jordbær juice", weight: 2, step: 6, priceKey: "juice750", priceOffset: 0 },
+  { key: "juice750_apple", label: "750 ml æble juice", weight: 2, step: 6, priceKey: "juice750", priceOffset: 0 },
+  { key: "juice750_spinach", label: "750 ml spinat juice", weight: 2, step: 6, priceKey: "juice750", priceOffset: 0 },
+  { key: "juice750_orange", label: "750 ml appelsin juice", weight: 2, step: 6, priceKey: "juice750", priceOffset: 0 },
+];
+
+export const CUSTOMER_PRODUCTS_WITH_750 = [...CUSTOMER_PRODUCTS, ...CUSTOMER_PRODUCTS_750];
+
 export function customerProductPrice(product, tier) {
   if (!product?.priceKey) return null;
   const basePrice = Number(tier?.prices?.[product.priceKey]);

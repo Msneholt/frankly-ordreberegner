@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import vm from "node:vm";
-import { CREDIT_PRODUCTS, CUSTOMER_PRODUCTS, DEFAULT_TIERS, calculateEmployeeMetrics, calculateNextPriceGap, customerProductPrice, deliveryBreakdownForPostalCode, deliveryFeeForPostalCode, getTier } from "./pricing.mjs";
+import { CREDIT_PRODUCTS, CUSTOMER_PRODUCTS, CUSTOMER_PRODUCTS_750, CUSTOMER_PRODUCTS_WITH_750, DEFAULT_TIERS, calculateEmployeeMetrics, calculateNextPriceGap, customerProductPrice, deliveryBreakdownForPostalCode, deliveryFeeForPostalCode, getTier } from "./pricing.mjs";
 
 function buildCustomerHtml(products = CUSTOMER_PRODUCTS) {
   const source = readFileSync(new URL("./app.js", import.meta.url), "utf8");
@@ -116,10 +116,10 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(script[1], /60 ml gurkemeje\/chili shot/);
   assert.match(script[1], /340 ml passion energi/);
   assert.match(script[1], /340 ml lime\/citron energi/);
-  assert.match(script[1], /productGroupLabels=\{juice250:"250 ml juice ØKO",smoothie250:"250 ml smoothie ØKO",shot60:"60 ml shot ØKO",energy340:"340 ml energi ØKO"\}/);
+  assert.match(script[1], /productGroupLabels=\{juice250:"250 ml juice ØKO",smoothie250:"250 ml smoothie ØKO",shot60:"60 ml shot ØKO",energy340:"340 ml energi ØKO",juice750:"750 ml juice ØKO"\}/);
   assert.match(script[1], /class="product-group-title"/);
   assert.match(html, /\.product-group-title\{grid-column:1\/-1;margin:15px 0 1px/);
-  assert.doesNotMatch(html, /750 ml juice|5 L BiB/);
+  assert.doesNotMatch(script[1], /juice750_beetroot|bib5000/);
   assert.match(html, /<title>Frankly · Ordreberegner<\/title>/);
 });
 
@@ -128,6 +128,8 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   const app = readFileSync(new URL("./app.js", import.meta.url), "utf8");
   const danishPage = readFileSync(new URL("./dist/ordreberegner/index.html", import.meta.url), "utf8");
   const englishPage = readFileSync(new URL("./dist/order-calculator/index.html", import.meta.url), "utf8");
+  const danish750Page = readFileSync(new URL("./dist/ordreberegner-750ml/index.html", import.meta.url), "utf8");
+  const english750Page = readFileSync(new URL("./dist/order-calculator-750ml/index.html", import.meta.url), "utf8");
 
   assert.match(index, /id="customerVersionButtonDa"[^>]*href="\.\/ordreberegner\/"[^>]*>Ordreberegner<\/a>/);
   assert.match(index, /id="customerVersionButtonEn"[^>]*href="\.\/order-calculator\/"[^>]*>Order Calculator<\/a>/);
@@ -138,6 +140,10 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.match(englishPage, /<title>Frankly · Order Calculator<\/title>/);
   assert.match(englishPage, /One-time order/);
   assert.match(englishPage, /Save this quote and send it to Frankly\./);
+  assert.match(danish750Page, /750 ml juice ØKO/);
+  assert.match(danish750Page, /750 ml rødbede juice/);
+  assert.match(english750Page, /750 ml organic juice/);
+  assert.match(english750Page, /750 ml beetroot juice/);
 });
 
 test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaScript", () => {
@@ -222,6 +228,20 @@ test("kundeversionen indeholder kun de 13 aftalte SKU'er", () => {
   assert.equal(CUSTOMER_PRODUCTS.filter(product => product.priceKey === "energy340").length, 2);
   assert.equal(CUSTOMER_PRODUCTS.some(product => product.priceKey === "juice750" || product.key === "bib5000"), false);
   assert.equal(CUSTOMER_PRODUCTS.filter(product => product.priceKey === "juice250").every(product => product.label.endsWith(" juice")), true);
+});
+
+test("750 ml-versionen tilføjer seks juice-SKU'er med korrekt creditvægt og pris", () => {
+  assert.equal(CUSTOMER_PRODUCTS_750.length, 6);
+  assert.equal(CUSTOMER_PRODUCTS_WITH_750.length, 19);
+  assert.equal(CUSTOMER_PRODUCTS_750.every(product => product.weight === 2 && product.step === 6 && product.priceKey === "juice750"), true);
+  assert.equal(CUSTOMER_PRODUCTS_750.every(product => product.label.endsWith(" juice")), true);
+  assert.equal(customerProductPrice(CUSTOMER_PRODUCTS_750[0], DEFAULT_TIERS[0]), 26);
+  assert.equal(customerProductPrice(CUSTOMER_PRODUCTS_750[0], DEFAULT_TIERS[3]), 24.5);
+  assert.equal(customerProductPrice(CUSTOMER_PRODUCTS_750[0], DEFAULT_TIERS[4]), 23.75);
+  const html = buildCustomerHtml(CUSTOMER_PRODUCTS_WITH_750);
+  assert.match(html, /750 ml rødbede juice/);
+  assert.match(html, /750 ml appelsin juice/);
+  assert.match(html, /750 ml juice ØKO/);
 });
 
 test("kundeversionen beregner 250 ml-varianternes pristillæg korrekt", () => {
