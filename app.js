@@ -697,11 +697,16 @@ async function downloadCustomerVersion(language = "da") {
       var deliveryBreakdownForPostalCode=${deliveryBreakdownFunction};
       var calculateNextPriceGap=${nextPriceGapFunction};
       var customerProductPrice=${customerProductPriceFunction};
+      var offerCode=new URLSearchParams(window.location.search).get("tilbud");
+      var premiumShotOffer=offerCode==="premium-shot-7";
+      var premiumShotOfferQuantities={juice250_beetroot:54,juice250_carrot:72,juice250_strawberry:72,juice250_spinach:36,shot60_ginger:276};
+      function quotedProductPrice(product,tier){var basePrice=customerProductPrice(product,tier);return premiumShotOffer&&tier.name==="Premium"&&product.priceKey==="shot60"?7:basePrice;}
       var money=new Intl.NumberFormat("da-DK",{minimumFractionDigits:2,maximumFractionDigits:2});
       var number=new Intl.NumberFormat("da-DK",{maximumFractionDigits:2});
       var integers=new Intl.NumberFormat("da-DK",{maximumFractionDigits:0});
       var productGrid=document.getElementById("productGrid");
       var savedQuantities={};
+      if(premiumShotOffer){Object.keys(premiumShotOfferQuantities).forEach(function(key){savedQuantities[key]=premiumShotOfferQuantities[key];});}
       productGrid.querySelectorAll("[data-product]").forEach(function(input){savedQuantities[input.dataset.product]=Math.max(0,Math.floor(Number(input.value)||0));});
       var toastTimer;
 
@@ -726,7 +731,7 @@ async function downloadCustomerVersion(language = "da") {
         var score=products.reduce(function(sum,product){return sum+quantities[product.key]*product.weight;},0)/cadence;
         var tier=tiers[0];tiers.forEach(function(candidate){if(score>=candidate.min)tier=candidate;});
         var unitsDelivery=products.reduce(function(sum,product){return sum+quantities[product.key];},0);
-        var pricedSubtotal=products.reduce(function(sum,product){var price=customerProductPrice(product,tier);return sum+(price==null?0:quantities[product.key]*price);},0);
+        var pricedSubtotal=products.reduce(function(sum,product){var price=quotedProductPrice(product,tier);return sum+(price==null?0:quantities[product.key]*price);},0);
         var hasProducts=unitsDelivery>0;
         var deliveryBreakdown=deliveryBreakdownForPostalCode(postalCode,pricedSubtotal);
         var feeKnown=deliveryBreakdown!==null;
@@ -755,7 +760,7 @@ async function downloadCustomerVersion(language = "da") {
         document.getElementById("cleanQuoteCadence").textContent=cadenceText(state.cadence,state.oneTime);
         document.getElementById("cleanQuoteEmployees").textContent=state.employeesRelevant?integers.format(state.employees):"Ikke relevant";
         document.getElementById("cleanQuoteQuantityHeading").textContent=state.oneTime?"Antal i bestillingen":"Antal pr. levering";
-        document.getElementById("cleanQuoteRows").innerHTML=selected.length?selected.map(function(product){var amount=quantity(product);var price=customerProductPrice(product,state.tier);return "<tr><td>"+safe(product.label)+"</td><td>"+integers.format(amount)+"</td><td>"+(price==null?"Aftales":money.format(price)+" DKK")+"</td><td>"+(price==null?"—":money.format(amount*price)+" DKK")+"</td></tr>";}).join(""):'<tr><td colspan="4">Der er endnu ikke valgt produkter.</td></tr>';
+        document.getElementById("cleanQuoteRows").innerHTML=selected.length?selected.map(function(product){var amount=quantity(product);var price=quotedProductPrice(product,state.tier);return "<tr><td>"+safe(product.label)+"</td><td>"+integers.format(amount)+"</td><td>"+(price==null?"Aftales":money.format(price)+" DKK")+"</td><td>"+(price==null?"—":money.format(amount*price)+" DKK")+"</td></tr>";}).join(""):'<tr><td colspan="4">Der er endnu ikke valgt produkter.</td></tr>';
         document.getElementById("cleanQuoteTotals").innerHTML='<div class="clean-quote-total"><span>Antal produkter i alt</span><strong>'+integers.format(state.unitsDelivery)+' stk.</strong></div><div class="clean-quote-total"><span>Produkter</span><strong>'+money.format(state.pricedSubtotal)+' DKK</strong></div>'+deliveryRows(state,"clean-quote-total",deliveryText)+'<div class="clean-quote-total grand"><span>'+(state.oneTime?"Total for bestillingen ekskl. moms":"Total pr. levering ekskl. moms")+'</span><strong>'+totalText+'</strong></div><div class="clean-quote-total"><span>Moms 25 %</span><strong>'+(state.priceReady?money.format(state.totalDelivery*.25)+" DKK":"—")+'</strong></div><div class="clean-quote-total"><span>Total inkl. moms</span><strong>'+totalVatText+'</strong></div>';
         var employeeMetricsReady=state.employeesRelevant&&!state.oneTime;
         document.getElementById("cleanQuotePerEmployee").textContent=employeeMetricsReady?money.format(state.totalWeekly/state.employees)+" DKK":"Ikke relevant";
@@ -779,7 +784,7 @@ async function downloadCustomerVersion(language = "da") {
         var priceNotice=document.getElementById("nextPriceNotice");priceNotice.hidden=!state.priceGap.available;if(state.priceGap.available){priceNotice.innerHTML='<strong>Bestil '+integers.format(state.priceGap.extraProducts)+' produkter yderligere og få en lavere pris pr. produkt.</strong>';}
         var selected=products.filter(function(product){return quantity(product)>0;});
         document.getElementById("orderRows").innerHTML=selected.length?selected.map(function(product){
-          var amount=quantity(product);var price=customerProductPrice(product,state.tier);
+          var amount=quantity(product);var price=quotedProductPrice(product,state.tier);
           return "<tr><td>"+safe(product.label)+"</td><td>"+integers.format(amount)+"</td><td>"+(price==null?"Aftales":money.format(price)+" DKK")+"</td><td>"+(price==null?"—":money.format(amount*price)+" DKK")+"</td></tr>";
         }).join(""):'<tr><td colspan="4">Vælg produkter for at se oversigten.</td></tr>';
         var deliveryText=!state.hasProducts?money.format(0)+" DKK":state.freeDelivery?"Gratis":state.feeKnown?money.format(state.fee)+" DKK":state.postalCode?"Aftales":"Indtast postnr.";var totalText=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";var totalVatText=state.priceReady?money.format(state.totalDelivery*1.25)+" DKK":"—";
@@ -794,7 +799,7 @@ async function downloadCustomerVersion(language = "da") {
         lines.push("Virksomhed: "+company,"Kontaktperson: "+contact,"CVR: "+(state.cvr||"Ikke angivet"),"Faktureringsmail: "+(state.invoiceEmail||"Ikke angivet"),"Telefonnummer: "+(state.phone||"Ikke angivet"),"Postnummer: "+postalCode,"Leveringsadresse: "+(state.deliveryAddress||"Ikke angivet"),"Antal medarbejdere: "+(state.employeesRelevant?integers.format(state.employees):"Ikke relevant"),"Levering: "+cadenceText(state.cadence,state.oneTime),"Prisgruppe: "+state.tier.name,"",state.oneTime?"Produkter i bestillingen:":"Produkter pr. levering:");
         var selected=products.filter(function(product){return quantity(product)>0;});
         if(!selected.length)lines.push("Ingen produkter valgt");
-        selected.forEach(function(product){var amount=quantity(product);var price=customerProductPrice(product,state.tier);lines.push("- "+product.label+": "+integers.format(amount)+" stk."+(price==null?" · pris aftales":" × "+money.format(price)+" DKK = "+money.format(amount*price)+" DKK"));});
+        selected.forEach(function(product){var amount=quantity(product);var price=quotedProductPrice(product,state.tier);lines.push("- "+product.label+": "+integers.format(amount)+" stk."+(price==null?" · pris aftales":" × "+money.format(price)+" DKK = "+money.format(amount*price)+" DKK"));});
         var deliverySummary=!state.hasProducts?money.format(0)+" DKK":state.freeDelivery?"Gratis":state.feeKnown?money.format(state.fee)+" DKK":"Aftales";var totalSummary=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";var totalVatSummary=state.priceReady?money.format(state.totalDelivery*1.25)+" DKK":"—";var employeeMetricsReady=state.employeesRelevant&&!state.oneTime;var employeeSummary=employeeMetricsReady?money.format(state.totalWeekly/state.employees)+" DKK ekskl. moms":"Ikke relevant";var employeeUnitsSummary=employeeMetricsReady?number.format(state.unitsWeekly/state.employees):"Ikke relevant";
         lines.push("");if(state.remoteDelivery){lines.push("Levering: "+money.format(state.deliveryCharge)+" DKK","EUR-palle: "+money.format(state.palletFee)+" DKK","Levering i alt: "+money.format(state.fee)+" DKK");}else{lines.push("Levering: "+deliverySummary);}lines.push((state.oneTime?"Total for bestillingen ekskl. moms: ":"Total pr. levering ekskl. moms: ")+totalSummary,"Total inkl. moms: "+totalVatSummary,"Pris pr. medarbejder pr. uge: "+employeeSummary,"Enheder pr. medarbejder pr. uge: "+employeeUnitsSummary);
         if(state.priceGap.available){lines.push("Bestil "+integers.format(state.priceGap.extraProducts)+" produkter yderligere og få en lavere pris pr. produkt.");}

@@ -178,6 +178,21 @@ test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaS
   assert.doesNotMatch(html, /Sammensæt|Jeres behov|Prisgruppe|Leveringsfrekvens|Kopiér|Tilbudsnummer|Postnummer|Éngangsbestilling|Ikke relevant|bestillingen/);
 });
 
+test("særtilbudslinket udfylder Premium-volumen og giver shots til 7 DKK", () => {
+  const html = buildCustomerHtml();
+  const script = html.match(/<script>([\s\S]*?)<\/script>/);
+  assert.ok(script);
+  assert.match(script[1], /get\("tilbud"\)/);
+  assert.match(script[1], /offerCode==="premium-shot-7"/);
+  assert.match(script[1], /juice250_beetroot:54/);
+  assert.match(script[1], /juice250_carrot:72/);
+  assert.match(script[1], /juice250_strawberry:72/);
+  assert.match(script[1], /juice250_spinach:36/);
+  assert.match(script[1], /shot60_ginger:276/);
+  assert.match(script[1], /tier\.name==="Premium"&&product\.priceKey==="shot60"\?7:basePrice/);
+  assert.equal(54 + 72 + 72 + 36 + 276 * 0.5, 372);
+});
+
 test("virksomhedsoplysninger står før Jeres behov, som står over alle produkter", () => {
   const html = buildCustomerHtml();
   const companyField = html.indexOf('id="company"');
