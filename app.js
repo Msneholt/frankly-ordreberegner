@@ -430,6 +430,8 @@ const CUSTOMER_PRODUCT_LABELS_EN = Object.freeze({
   juice750_apple: "750 ml apple juice",
   juice750_spinach: "750 ml spinach juice",
   juice750_orange: "750 ml orange juice",
+  shot340_ginger: "340 ml ginger shot",
+  shot340_turmeric_chili: "340 ml turmeric/chilli shot",
 });
 
 const CUSTOMER_ENGLISH_REPLACEMENTS = [
@@ -443,6 +445,7 @@ const CUSTOMER_ENGLISH_REPLACEMENTS = [
   ["60 ml shot ØKO", "60 ml organic shot"],
   ["340 ml energi ØKO", "340 ml organic energy"],
   ["750 ml juice ØKO", "750 ml organic juice"],
+  ["340 ml shot ØKO", "340 ml organic shot"],
   ["Virksomhed", "Company"],
   ["Faktureringsmail ikke angivet", "Invoice email not entered"],
   ["Telefonnummer ikke angivet", "Phone number not entered"],
@@ -814,7 +817,7 @@ async function downloadCustomerVersion(language = "da") {
         lines.push("","Frankly bekræfter det endelige sortiment og levering.");return lines.join("\\n");
       }
       function productMarkup(product){var saved=savedQuantities[product.key]||0;return '<label class="product-field"><span class="product-label">'+safe(product.label)+'</span><span class="quantity-control"><input type="number" min="0" step="'+product.step+'" value="'+saved+'" inputmode="numeric" data-product="'+product.key+'" aria-label="Antal '+safe(product.label)+' i stk. pr. levering"><span class="quantity-unit">stk.</span></span><span class="pack-note">Pakke á '+product.step+' stk.</span></label>';}
-      var productGroupLabels={juice250:"250 ml juice ØKO",smoothie250:"250 ml smoothie ØKO",shot60:"60 ml shot ØKO",energy340:"340 ml energi ØKO",juice750:"750 ml juice ØKO"};var previousGroup="";
+      var productGroupLabels={juice250:"250 ml juice ØKO",smoothie250:"250 ml smoothie ØKO",shot60:"60 ml shot ØKO",energy340:"340 ml energi ØKO",juice750:"750 ml juice ØKO",shot340:"340 ml shot ØKO"};var previousGroup="";
       productGrid.innerHTML=products.map(function(product){var heading="";if(product.priceKey!==previousGroup){previousGroup=product.priceKey;heading='<h3 class="product-group-title">'+safe(productGroupLabels[product.priceKey]||product.priceKey)+'</h3>';}return heading+productMarkup(product);}).join("");
       document.addEventListener("input",function(event){if(event.target.matches("input,select,textarea"))render();});
       document.addEventListener("change",function(event){

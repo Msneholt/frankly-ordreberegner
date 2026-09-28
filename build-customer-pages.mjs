@@ -2,6 +2,7 @@ import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
 import {
   CUSTOMER_PRODUCTS,
+  CUSTOMER_PRODUCTS_COMPLETE,
   CUSTOMER_PRODUCTS_WITH_750,
   DEFAULT_TIERS,
   calculateNextPriceGap,
@@ -61,6 +62,8 @@ mkdirSync("dist/ordreberegner", { recursive: true });
 mkdirSync("dist/order-calculator", { recursive: true });
 mkdirSync("dist/ordreberegner-750ml", { recursive: true });
 mkdirSync("dist/order-calculator-750ml", { recursive: true });
+mkdirSync("dist/ordreberegner-komplet", { recursive: true });
+mkdirSync("dist/order-calculator-complete", { recursive: true });
 mkdirSync("dist/assets", { recursive: true });
 for (const file of ["index.html", "app.js", "pricing.mjs", "styles.css"]) {
   copyFileSync(file, `dist/${file}`);
@@ -72,6 +75,8 @@ writeFileSync("dist/ordreberegner/index.html", customerPage("da"));
 writeFileSync("dist/order-calculator/index.html", customerPage("en"));
 writeFileSync("dist/ordreberegner-750ml/index.html", customerPage("da", CUSTOMER_PRODUCTS_WITH_750));
 writeFileSync("dist/order-calculator-750ml/index.html", customerPage("en", CUSTOMER_PRODUCTS_WITH_750));
+writeFileSync("dist/ordreberegner-komplet/index.html", customerPage("da", CUSTOMER_PRODUCTS_COMPLETE));
+writeFileSync("dist/order-calculator-complete/index.html", customerPage("en", CUSTOMER_PRODUCTS_COMPLETE));
 writeFileSync("dist/.nojekyll", "");
 
 console.log("Customer calculator pages generated.");

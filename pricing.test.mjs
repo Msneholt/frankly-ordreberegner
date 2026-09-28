@@ -18,11 +18,11 @@ assert.equal(formatRange(tiers, 0), "0–49");
 assert.equal(formatRange(tiers, 4), "450+");
 assert.ok(getTier(tiers, 300).tier.prices.juice250 > getTier(tiers, 700).tier.prices.juice250);
 assert.deepEqual(tiers.map(tier => ({ name: tier.name, min: tier.min, prices: tier.prices })), [
-  { name: "Standard", min: 0, prices: { juice250: 16, shot60: 8, energy340: 13, smoothie250: 17, juice750: 26 } },
-  { name: "Select", min: 50, prices: { juice250: 14.5, shot60: 7.75, energy340: 12.75, smoothie250: 15.25, juice750: 25.5 } },
-  { name: "Plus", min: 125, prices: { juice250: 13.75, shot60: 7.5, energy340: 12.5, smoothie250: 14.5, juice750: 25 } },
-  { name: "Premium", min: 250, prices: { juice250: 13.25, shot60: 7.25, energy340: 12, smoothie250: 13.75, juice750: 24.5 } },
-  { name: "Key Account", min: 450, prices: { juice250: 12.75, shot60: 7, energy340: 11.5, smoothie250: 13, juice750: 23.75 } },
+  { name: "Standard", min: 0, prices: { juice250: 16, shot60: 8, energy340: 13, smoothie250: 17, juice750: 26, shot340: 20 } },
+  { name: "Select", min: 50, prices: { juice250: 14.5, shot60: 7.75, energy340: 12.75, smoothie250: 15.25, juice750: 25.5, shot340: 19.5 } },
+  { name: "Plus", min: 125, prices: { juice250: 13.75, shot60: 7.5, energy340: 12.5, smoothie250: 14.5, juice750: 25, shot340: 19 } },
+  { name: "Premium", min: 250, prices: { juice250: 13.25, shot60: 7.25, energy340: 12, smoothie250: 13.75, juice750: 24.5, shot340: 18.5 } },
+  { name: "Key Account", min: 450, prices: { juice250: 12.75, shot60: 7, energy340: 11.5, smoothie250: 13, juice750: 23.75, shot340: 18 } },
 ]);
 assert.ok(runModelChecks(tiers).every(check => check.ok), "all displayed checks should pass");
 assert.equal(calculateCredits({ juice250: 18 }), 18);

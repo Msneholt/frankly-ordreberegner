@@ -42,6 +42,13 @@ export const CUSTOMER_PRODUCTS_750 = [
 
 export const CUSTOMER_PRODUCTS_WITH_750 = [...CUSTOMER_PRODUCTS, ...CUSTOMER_PRODUCTS_750];
 
+export const CUSTOMER_PRODUCTS_340_SHOTS = [
+  { key: "shot340_ginger", label: "340 ml ingefær shot", weight: 1, step: 6, priceKey: "shot340", priceOffset: 0 },
+  { key: "shot340_turmeric_chili", label: "340 ml gurkemeje/chili shot", weight: 1, step: 6, priceKey: "shot340", priceOffset: 0 },
+];
+
+export const CUSTOMER_PRODUCTS_COMPLETE = [...CUSTOMER_PRODUCTS_WITH_750, ...CUSTOMER_PRODUCTS_340_SHOTS];
+
 export function customerProductPrice(product, tier) {
   if (!product?.priceKey) return null;
   const basePrice = Number(tier?.prices?.[product.priceKey]);
@@ -59,11 +66,11 @@ export const DEFAULT_QUANTITIES = {
 };
 
 export const DEFAULT_TIERS = [
-  { name: "Standard", min: 0, prices: { juice250: 16.00, shot60: 8.00, energy340: 13.00, smoothie250: 17.00, juice750: 26.00 } },
-  { name: "Select", min: 50, prices: { juice250: 14.50, shot60: 7.75, energy340: 12.75, smoothie250: 15.25, juice750: 25.50 } },
-  { name: "Plus", min: 125, prices: { juice250: 13.75, shot60: 7.50, energy340: 12.50, smoothie250: 14.50, juice750: 25.00 } },
-  { name: "Premium", min: 250, prices: { juice250: 13.25, shot60: 7.25, energy340: 12.00, smoothie250: 13.75, juice750: 24.50 } },
-  { name: "Key Account", min: 450, prices: { juice250: 12.75, shot60: 7.00, energy340: 11.50, smoothie250: 13.00, juice750: 23.75 } },
+  { name: "Standard", min: 0, prices: { juice250: 16.00, shot60: 8.00, energy340: 13.00, smoothie250: 17.00, juice750: 26.00, shot340: 20.00 } },
+  { name: "Select", min: 50, prices: { juice250: 14.50, shot60: 7.75, energy340: 12.75, smoothie250: 15.25, juice750: 25.50, shot340: 19.50 } },
+  { name: "Plus", min: 125, prices: { juice250: 13.75, shot60: 7.50, energy340: 12.50, smoothie250: 14.50, juice750: 25.00, shot340: 19.00 } },
+  { name: "Premium", min: 250, prices: { juice250: 13.25, shot60: 7.25, energy340: 12.00, smoothie250: 13.75, juice750: 24.50, shot340: 18.50 } },
+  { name: "Key Account", min: 450, prices: { juice250: 12.75, shot60: 7.00, energy340: 11.50, smoothie250: 13.00, juice750: 23.75, shot340: 18.00 } },
 ];
 
 export function cloneTiers(tiers = DEFAULT_TIERS) {
