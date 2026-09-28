@@ -49,10 +49,10 @@ export const DEFAULT_QUANTITIES = {
 
 export const DEFAULT_TIERS = [
   { name: "Standard", min: 0, prices: { juice250: 16.00, shot60: 8.00, energy340: 13.00, smoothie250: 17.00, juice750: 26.00 } },
-  { name: "Select", min: 50, prices: { juice250: 15.25, shot60: 7.75, energy340: 12.75, smoothie250: 16.50, juice750: 25.50 } },
-  { name: "Plus", min: 150, prices: { juice250: 14.50, shot60: 7.50, energy340: 12.50, smoothie250: 16.00, juice750: 25.00 } },
-  { name: "Premium", min: 300, prices: { juice250: 13.75, shot60: 7.25, energy340: 12.25, smoothie250: 15.25, juice750: 24.50 } },
-  { name: "Key Account", min: 500, prices: { juice250: 12.75, shot60: 7.00, energy340: 12.00, smoothie250: 14.50, juice750: 23.75 } },
+  { name: "Select", min: 50, prices: { juice250: 14.50, shot60: 7.75, energy340: 12.75, smoothie250: 15.25, juice750: 25.50 } },
+  { name: "Plus", min: 125, prices: { juice250: 13.75, shot60: 7.50, energy340: 12.50, smoothie250: 14.50, juice750: 25.00 } },
+  { name: "Premium", min: 250, prices: { juice250: 13.25, shot60: 7.25, energy340: 12.00, smoothie250: 13.75, juice750: 24.50 } },
+  { name: "Key Account", min: 450, prices: { juice250: 12.75, shot60: 7.00, energy340: 11.50, smoothie250: 13.00, juice750: 23.75 } },
 ];
 
 export function cloneTiers(tiers = DEFAULT_TIERS) {
@@ -142,7 +142,7 @@ export function calculateNextPriceGap(tiers, products, quantities, rawCadenceWee
   products.forEach(product => {
     const currentQuantity = Math.max(0, Math.floor(Number(quantities?.[product.key]) || 0));
     const step = Number(product.step) > 0 ? Number(product.step) : 1;
-    const targetQuantity = currentQuantity > 0 ? Math.ceil((currentQuantity * scale) / step) * step : 0;
+    const targetQuantity = currentQuantity > 0 ? Math.ceil(((currentQuantity * scale) / step) - 1e-9) * step : 0;
     targetQuantities[product.key] = targetQuantity;
     extraProducts += Math.max(0, targetQuantity - currentQuantity);
   });
@@ -222,7 +222,7 @@ export function calculateUpgradeTrade(tiers, quantities, rawCadenceWeeks = 1) {
   CREDIT_PRODUCTS.forEach(product => {
     const currentQuantity = Math.max(0, Math.floor(Number(quantities?.[product.key]) || 0));
     upgradedQuantities[product.key] = currentQuantity > 0
-      ? Math.ceil((currentQuantity * scale) / product.step) * product.step
+      ? Math.ceil(((currentQuantity * scale) / product.step) - 1e-9) * product.step
       : 0;
   });
 

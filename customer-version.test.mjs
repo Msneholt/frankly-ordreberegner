@@ -220,8 +220,8 @@ test("kundeversionen beregner 250 ml-varianternes pristillæg korrekt", () => {
   assert.equal(customerProductPrice(product("juice250_apple"), standard), 16);
   assert.equal(customerProductPrice(product("juice250_spinach"), standard), 16.5);
   assert.equal(customerProductPrice(product("juice250_orange"), standard), 16.75);
-  assert.equal(customerProductPrice(product("juice250_spinach"), premium), 14.25);
-  assert.equal(customerProductPrice(product("juice250_orange"), premium), 14.5);
+  assert.equal(customerProductPrice(product("juice250_spinach"), premium), 13.75);
+  assert.equal(customerProductPrice(product("juice250_orange"), premium), 14);
 });
 
 test("pristilbuddet viser og eksporterer den tilknyttede kommentar", () => {
@@ -314,11 +314,11 @@ test("leveringspris følger postnummergrænserne og bliver gratis fra 2.250 DKK"
 });
 
 test("afstand til næste pris beregnes i fysiske produkter og hele pakker", () => {
-  const quantities = { juice250: 498, shot60: 0, energy340: 0, smoothie250: 0, juice750: 0, bib5000: 0 };
+  const quantities = { juice250: 444, shot60: 0, energy340: 0, smoothie250: 0, juice750: 0, bib5000: 0 };
   const gap = calculateNextPriceGap(DEFAULT_TIERS, CREDIT_PRODUCTS, quantities, 1);
   assert.equal(gap.available, true);
   assert.equal(gap.extraProducts, 6);
-  assert.equal(gap.targetQuantities.juice250, 504);
+  assert.equal(gap.targetQuantities.juice250, 450);
   assert.equal(gap.currentTierIndex, 3);
   assert.equal(gap.nextTierIndex, 4);
 
