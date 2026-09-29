@@ -55,17 +55,19 @@ export const CUSTOMER_PRODUCTS_750_CITRUS = [
 ];
 
 export const CUSTOMER_PRODUCTS_BIB = [
-  { key: "bib5000_spinach", label: "5 L spinat Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 139.5, priceOffset: 0 },
-  { key: "bib5000_apple", label: "5 L æble Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 131, priceOffset: 0 },
-  { key: "bib5000_beetroot", label: "5 L rødbede Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 130, priceOffset: 0 },
-  { key: "bib5000_carrot", label: "5 L gulerod Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 132, priceOffset: 0 },
-  { key: "bib5000_strawberry", label: "5 L jordbær Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 136, priceOffset: 0 },
-  { key: "bib5000_orange", label: "5 L appelsin Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 153, priceOffset: 0 },
+  { key: "bib5000_spinach", label: "5 L spinat Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 155, Select: 152.5, Plus: 150, Premium: 147.5, "Key Account": 145 }, priceOffset: 0 },
+  { key: "bib5000_apple", label: "5 L æble Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 135, Select: 133.75, Plus: 132.5, Premium: 131.25, "Key Account": 130 }, priceOffset: 0 },
+  { key: "bib5000_beetroot", label: "5 L rødbede Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 140, Select: 138, Plus: 136, Premium: 134, "Key Account": 132 }, priceOffset: 0 },
+  { key: "bib5000_carrot", label: "5 L gulerod Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 140, Select: 138, Plus: 136, Premium: 134, "Key Account": 132 }, priceOffset: 0 },
+  { key: "bib5000_strawberry", label: "5 L jordbær Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 145, Select: 142.5, Plus: 140, Premium: 137.5, "Key Account": 135 }, priceOffset: 0 },
+  { key: "bib5000_orange", label: "5 L appelsin Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 165, Select: 162.5, Plus: 160, Premium: 157.5, "Key Account": 155 }, priceOffset: 0 },
 ];
 
 export const CUSTOMER_PRODUCTS_WITH_BIB_CITRUS = [...CUSTOMER_PRODUCTS_COMPLETE, ...CUSTOMER_PRODUCTS_750_CITRUS, ...CUSTOMER_PRODUCTS_BIB];
 
 export function customerProductPrice(product, tier) {
+  const tierPrice = Number(product?.tierPrices?.[tier?.name]);
+  if (Number.isFinite(tierPrice)) return tierPrice + (Number(product.priceOffset) || 0);
   const fixedPrice = Number(product?.fixedPrice);
   if (Number.isFinite(fixedPrice)) return fixedPrice + (Number(product.priceOffset) || 0);
   if (!product?.priceKey) return null;

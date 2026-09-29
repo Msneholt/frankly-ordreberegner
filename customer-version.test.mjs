@@ -271,15 +271,18 @@ test("den komplette version tilføjer to 340 ml-shots med aftalt prisstige", () 
   assert.match(html, /340 ml shot ØKO/);
 });
 
-test("BiB- og citrusversionen bruger kendte SKU-priser og creditvægte", () => {
+test("BiB- og citrusversionen bruger aftalte prisstiger og creditvægte", () => {
   assert.equal(CUSTOMER_PRODUCTS_750_CITRUS.length, 2);
   assert.equal(CUSTOMER_PRODUCTS_BIB.length, 6);
   assert.equal(CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.length, 29);
   assert.equal(CUSTOMER_PRODUCTS_750_CITRUS.every(product => product.weight === 2 && product.step === 6), true);
   assert.equal(CUSTOMER_PRODUCTS_BIB.every(product => product.weight === 10 && product.step === 6), true);
   assert.deepEqual(CUSTOMER_PRODUCTS_750_CITRUS.map(product => customerProductPrice(product, DEFAULT_TIERS[0])), [40, 45]);
-  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[4])), [139.5, 131, 130, 132, 136, 153]);
-  assert.equal(customerProductPrice(CUSTOMER_PRODUCTS_BIB[0], DEFAULT_TIERS[0]), customerProductPrice(CUSTOMER_PRODUCTS_BIB[0], DEFAULT_TIERS[4]));
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[0])), [155, 135, 140, 140, 145, 165]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[1])), [152.5, 133.75, 138, 138, 142.5, 162.5]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[2])), [150, 132.5, 136, 136, 140, 160]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[3])), [147.5, 131.25, 134, 134, 137.5, 157.5]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[4])), [145, 130, 132, 132, 135, 155]);
   const html = buildCustomerHtml(CUSTOMER_PRODUCTS_WITH_BIB_CITRUS);
   assert.match(html, /750 ml lemon citrus/);
   assert.match(html, /750 ml lime citrus/);
