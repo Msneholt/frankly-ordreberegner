@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import vm from "node:vm";
-import { CREDIT_PRODUCTS, CUSTOMER_PRODUCTS, CUSTOMER_PRODUCTS_340_SHOTS, CUSTOMER_PRODUCTS_750, CUSTOMER_PRODUCTS_COMPLETE, CUSTOMER_PRODUCTS_WITH_750, DEFAULT_TIERS, calculateEmployeeMetrics, calculateNextPriceGap, customerProductPrice, deliveryBreakdownForPostalCode, deliveryFeeForPostalCode, getTier } from "./pricing.mjs";
+import { CREDIT_PRODUCTS, CUSTOMER_PRODUCTS, CUSTOMER_PRODUCTS_340_SHOTS, CUSTOMER_PRODUCTS_750, CUSTOMER_PRODUCTS_750_CITRUS, CUSTOMER_PRODUCTS_BIB, CUSTOMER_PRODUCTS_COMPLETE, CUSTOMER_PRODUCTS_WITH_750, CUSTOMER_PRODUCTS_WITH_BIB_CITRUS, DEFAULT_TIERS, calculateEmployeeMetrics, calculateNextPriceGap, customerProductPrice, deliveryBreakdownForPostalCode, deliveryFeeForPostalCode, getTier } from "./pricing.mjs";
 
 function buildCustomerHtml(products = CUSTOMER_PRODUCTS) {
   const source = readFileSync(new URL("./app.js", import.meta.url), "utf8");
@@ -116,10 +116,10 @@ test("kundeversionen er selvstændig, enkel og uden interne begreber i visningen
   assert.match(script[1], /60 ml gurkemeje\/chili shot/);
   assert.match(script[1], /340 ml passion energi/);
   assert.match(script[1], /340 ml lime\/citron energi/);
-  assert.match(script[1], /productGroupLabels=\{juice250:"250 ml juice ØKO",smoothie250:"250 ml smoothie ØKO",shot60:"60 ml shot ØKO",energy340:"340 ml energi ØKO",juice750:"750 ml juice ØKO",shot340:"340 ml shot ØKO"\}/);
+  assert.match(script[1], /productGroupLabels=\{juice250:"250 ml juice ØKO",smoothie250:"250 ml smoothie ØKO",shot60:"60 ml shot ØKO",energy340:"340 ml energi ØKO",juice750:"750 ml juice ØKO",shot340:"340 ml shot ØKO",citrus750:"750 ml citrus ØKO",bib5000:"5 L Bag-in-Box ØKO"\}/);
   assert.match(script[1], /class="product-group-title"/);
   assert.match(html, /\.product-group-title\{grid-column:1\/-1;margin:15px 0 1px/);
-  assert.doesNotMatch(script[1], /juice750_beetroot|shot340_ginger|bib5000/);
+  assert.doesNotMatch(script[1], /juice750_beetroot|shot340_ginger|bib5000_spinach|citrus750_lemon/);
   assert.match(html, /<title>Frankly · Ordreberegner<\/title>/);
 });
 
@@ -132,6 +132,8 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   const english750Page = readFileSync(new URL("./dist/order-calculator-750ml/index.html", import.meta.url), "utf8");
   const danishCompletePage = readFileSync(new URL("./dist/ordreberegner-komplet/index.html", import.meta.url), "utf8");
   const englishCompletePage = readFileSync(new URL("./dist/order-calculator-complete/index.html", import.meta.url), "utf8");
+  const danishBibCitrusPage = readFileSync(new URL("./dist/ordreberegner-bib-citrus/index.html", import.meta.url), "utf8");
+  const englishBibCitrusPage = readFileSync(new URL("./dist/order-calculator-bib-citrus/index.html", import.meta.url), "utf8");
 
   assert.match(index, /id="customerVersionButtonDa"[^>]*href="\.\/ordreberegner\/"[^>]*>Ordreberegner<\/a>/);
   assert.match(index, /id="customerVersionButtonEn"[^>]*href="\.\/order-calculator\/"[^>]*>Order Calculator<\/a>/);
@@ -152,6 +154,12 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.match(englishCompletePage, /340 ml organic shot/);
   assert.match(englishCompletePage, /340 ml ginger shot/);
   assert.match(englishCompletePage, /340 ml turmeric\/chilli shot/);
+  assert.match(danishBibCitrusPage, /750 ml citrus ØKO/);
+  assert.match(danishBibCitrusPage, /5 L Bag-in-Box ØKO/);
+  assert.match(danishBibCitrusPage, /5 L spinat Bag-in-Box/);
+  assert.match(englishBibCitrusPage, /750 ml organic citrus/);
+  assert.match(englishBibCitrusPage, /5 L organic Bag-in-Box/);
+  assert.match(englishBibCitrusPage, /5 L spinach Bag-in-Box/);
 });
 
 test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaScript", () => {
@@ -261,6 +269,21 @@ test("den komplette version tilføjer to 340 ml-shots med aftalt prisstige", () 
   assert.match(html, /340 ml ingefær shot/);
   assert.match(html, /340 ml gurkemeje\/chili shot/);
   assert.match(html, /340 ml shot ØKO/);
+});
+
+test("BiB- og citrusversionen bruger kendte SKU-priser og creditvægte", () => {
+  assert.equal(CUSTOMER_PRODUCTS_750_CITRUS.length, 2);
+  assert.equal(CUSTOMER_PRODUCTS_BIB.length, 6);
+  assert.equal(CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.length, 29);
+  assert.equal(CUSTOMER_PRODUCTS_750_CITRUS.every(product => product.weight === 2 && product.step === 6), true);
+  assert.equal(CUSTOMER_PRODUCTS_BIB.every(product => product.weight === 10 && product.step === 6), true);
+  assert.deepEqual(CUSTOMER_PRODUCTS_750_CITRUS.map(product => customerProductPrice(product, DEFAULT_TIERS[0])), [40, 45]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[4])), [139.5, 131, 130, 132, 136, 153]);
+  assert.equal(customerProductPrice(CUSTOMER_PRODUCTS_BIB[0], DEFAULT_TIERS[0]), customerProductPrice(CUSTOMER_PRODUCTS_BIB[0], DEFAULT_TIERS[4]));
+  const html = buildCustomerHtml(CUSTOMER_PRODUCTS_WITH_BIB_CITRUS);
+  assert.match(html, /750 ml lemon citrus/);
+  assert.match(html, /750 ml lime citrus/);
+  assert.match(html, /5 L appelsin Bag-in-Box/);
 });
 
 test("kundeversionen beregner 250 ml-varianternes pristillæg korrekt", () => {

@@ -432,6 +432,14 @@ const CUSTOMER_PRODUCT_LABELS_EN = Object.freeze({
   juice750_orange: "750 ml orange juice",
   shot340_ginger: "340 ml ginger shot",
   shot340_turmeric_chili: "340 ml turmeric/chilli shot",
+  citrus750_lemon: "750 ml lemon citrus",
+  citrus750_lime: "750 ml lime citrus",
+  bib5000_spinach: "5 L spinach Bag-in-Box",
+  bib5000_apple: "5 L apple Bag-in-Box",
+  bib5000_beetroot: "5 L beetroot Bag-in-Box",
+  bib5000_carrot: "5 L carrot Bag-in-Box",
+  bib5000_strawberry: "5 L strawberry Bag-in-Box",
+  bib5000_orange: "5 L orange Bag-in-Box",
 });
 
 const CUSTOMER_ENGLISH_REPLACEMENTS = [
@@ -446,6 +454,8 @@ const CUSTOMER_ENGLISH_REPLACEMENTS = [
   ["340 ml energi ØKO", "340 ml organic energy"],
   ["750 ml juice ØKO", "750 ml organic juice"],
   ["340 ml shot ØKO", "340 ml organic shot"],
+  ["750 ml citrus ØKO", "750 ml organic citrus"],
+  ["5 L Bag-in-Box ØKO", "5 L organic Bag-in-Box"],
   ["Virksomhed", "Company"],
   ["Faktureringsmail ikke angivet", "Invoice email not entered"],
   ["Telefonnummer ikke angivet", "Phone number not entered"],
@@ -569,7 +579,7 @@ async function downloadCustomerVersion(language = "da") {
   const customerProducts = CUSTOMER_PRODUCTS.map(product => ({
     ...product,
     label: isEnglish ? CUSTOMER_PRODUCT_LABELS_EN[product.key] || product.label : product.label,
-    priced: Boolean(product.priceKey),
+    priced: Boolean(product.priceKey) || Number.isFinite(Number(product.fixedPrice)),
   }));
   const customerTiers = tiers.map(tier => ({ name: tier.name, min: tier.min, prices: tier.prices }));
   const tiersJson = JSON.stringify(customerTiers).replaceAll("<", "\\u003c");
@@ -817,7 +827,7 @@ async function downloadCustomerVersion(language = "da") {
         lines.push("","Frankly bekræfter det endelige sortiment og levering.");return lines.join("\\n");
       }
       function productMarkup(product){var saved=savedQuantities[product.key]||0;return '<label class="product-field"><span class="product-label">'+safe(product.label)+'</span><span class="quantity-control"><input type="number" min="0" step="'+product.step+'" value="'+saved+'" inputmode="numeric" data-product="'+product.key+'" aria-label="Antal '+safe(product.label)+' i stk. pr. levering"><span class="quantity-unit">stk.</span></span><span class="pack-note">Pakke á '+product.step+' stk.</span></label>';}
-      var productGroupLabels={juice250:"250 ml juice ØKO",smoothie250:"250 ml smoothie ØKO",shot60:"60 ml shot ØKO",energy340:"340 ml energi ØKO",juice750:"750 ml juice ØKO",shot340:"340 ml shot ØKO"};var previousGroup="";
+      var productGroupLabels={juice250:"250 ml juice ØKO",smoothie250:"250 ml smoothie ØKO",shot60:"60 ml shot ØKO",energy340:"340 ml energi ØKO",juice750:"750 ml juice ØKO",shot340:"340 ml shot ØKO",citrus750:"750 ml citrus ØKO",bib5000:"5 L Bag-in-Box ØKO"};var previousGroup="";
       productGrid.innerHTML=products.map(function(product){var heading="";if(product.priceKey!==previousGroup){previousGroup=product.priceKey;heading='<h3 class="product-group-title">'+safe(productGroupLabels[product.priceKey]||product.priceKey)+'</h3>';}return heading+productMarkup(product);}).join("");
       document.addEventListener("input",function(event){if(event.target.matches("input,select,textarea"))render();});
       document.addEventListener("change",function(event){

@@ -49,7 +49,25 @@ export const CUSTOMER_PRODUCTS_340_SHOTS = [
 
 export const CUSTOMER_PRODUCTS_COMPLETE = [...CUSTOMER_PRODUCTS_WITH_750, ...CUSTOMER_PRODUCTS_340_SHOTS];
 
+export const CUSTOMER_PRODUCTS_750_CITRUS = [
+  { key: "citrus750_lemon", label: "750 ml lemon citrus", weight: 2, step: 6, priceKey: "citrus750", fixedPrice: 40, priceOffset: 0 },
+  { key: "citrus750_lime", label: "750 ml lime citrus", weight: 2, step: 6, priceKey: "citrus750", fixedPrice: 45, priceOffset: 0 },
+];
+
+export const CUSTOMER_PRODUCTS_BIB = [
+  { key: "bib5000_spinach", label: "5 L spinat Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 139.5, priceOffset: 0 },
+  { key: "bib5000_apple", label: "5 L æble Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 131, priceOffset: 0 },
+  { key: "bib5000_beetroot", label: "5 L rødbede Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 130, priceOffset: 0 },
+  { key: "bib5000_carrot", label: "5 L gulerod Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 132, priceOffset: 0 },
+  { key: "bib5000_strawberry", label: "5 L jordbær Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 136, priceOffset: 0 },
+  { key: "bib5000_orange", label: "5 L appelsin Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", fixedPrice: 153, priceOffset: 0 },
+];
+
+export const CUSTOMER_PRODUCTS_WITH_BIB_CITRUS = [...CUSTOMER_PRODUCTS_COMPLETE, ...CUSTOMER_PRODUCTS_750_CITRUS, ...CUSTOMER_PRODUCTS_BIB];
+
 export function customerProductPrice(product, tier) {
+  const fixedPrice = Number(product?.fixedPrice);
+  if (Number.isFinite(fixedPrice)) return fixedPrice + (Number(product.priceOffset) || 0);
   if (!product?.priceKey) return null;
   const basePrice = Number(tier?.prices?.[product.priceKey]);
   if (!Number.isFinite(basePrice)) return null;

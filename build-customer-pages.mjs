@@ -3,6 +3,7 @@ import vm from "node:vm";
 import {
   CUSTOMER_PRODUCTS,
   CUSTOMER_PRODUCTS_COMPLETE,
+  CUSTOMER_PRODUCTS_WITH_BIB_CITRUS,
   CUSTOMER_PRODUCTS_WITH_750,
   DEFAULT_TIERS,
   calculateNextPriceGap,
@@ -45,7 +46,7 @@ function customerPage(language, productList = CUSTOMER_PRODUCTS) {
   const products = productList.map(product => ({
     ...product,
     label: isEnglish ? translationContext.labels[product.key] || product.label : product.label,
-    priced: Boolean(product.priceKey),
+    priced: Boolean(product.priceKey) || Number.isFinite(Number(product.fixedPrice)),
   }));
   const html = render(
     logoMarkup,
@@ -64,6 +65,8 @@ mkdirSync("dist/ordreberegner-750ml", { recursive: true });
 mkdirSync("dist/order-calculator-750ml", { recursive: true });
 mkdirSync("dist/ordreberegner-komplet", { recursive: true });
 mkdirSync("dist/order-calculator-complete", { recursive: true });
+mkdirSync("dist/ordreberegner-bib-citrus", { recursive: true });
+mkdirSync("dist/order-calculator-bib-citrus", { recursive: true });
 mkdirSync("dist/assets", { recursive: true });
 for (const file of ["index.html", "app.js", "pricing.mjs", "styles.css"]) {
   copyFileSync(file, `dist/${file}`);
@@ -77,6 +80,8 @@ writeFileSync("dist/ordreberegner-750ml/index.html", customerPage("da", CUSTOMER
 writeFileSync("dist/order-calculator-750ml/index.html", customerPage("en", CUSTOMER_PRODUCTS_WITH_750));
 writeFileSync("dist/ordreberegner-komplet/index.html", customerPage("da", CUSTOMER_PRODUCTS_COMPLETE));
 writeFileSync("dist/order-calculator-complete/index.html", customerPage("en", CUSTOMER_PRODUCTS_COMPLETE));
+writeFileSync("dist/ordreberegner-bib-citrus/index.html", customerPage("da", CUSTOMER_PRODUCTS_WITH_BIB_CITRUS));
+writeFileSync("dist/order-calculator-bib-citrus/index.html", customerPage("en", CUSTOMER_PRODUCTS_WITH_BIB_CITRUS));
 writeFileSync("dist/.nojekyll", "");
 
 console.log("Customer calculator pages generated.");
