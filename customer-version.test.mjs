@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import vm from "node:vm";
-import { CREDIT_PRODUCTS, CUSTOMER_PRODUCTS, CUSTOMER_PRODUCTS_340_SHOTS, CUSTOMER_PRODUCTS_750, CUSTOMER_PRODUCTS_750_CITRUS, CUSTOMER_PRODUCTS_BIB, CUSTOMER_PRODUCTS_COMPLETE, CUSTOMER_PRODUCTS_WITH_750, CUSTOMER_PRODUCTS_WITH_BIB_CITRUS, DEFAULT_TIERS, calculateEmployeeMetrics, calculateNextPriceGap, customerProductPrice, deliveryBreakdownForPostalCode, deliveryFeeForPostalCode, getTier } from "./pricing.mjs";
+import { CREDIT_PRODUCTS, CUSTOMER_PRODUCTS, CUSTOMER_PRODUCTS_340_SHOTS, CUSTOMER_PRODUCTS_750, CUSTOMER_PRODUCTS_750_CITRUS, CUSTOMER_PRODUCTS_BIB, CUSTOMER_PRODUCTS_COMPLETE, CUSTOMER_PRODUCTS_WITH_750, CUSTOMER_PRODUCTS_WITH_BIB_CITRUS, DEFAULT_TIERS, RESELLER_MARKUP, RESELLER_PRODUCTS, RESELLER_TIERS, calculateEmployeeMetrics, calculateNextPriceGap, customerProductPrice, deliveryBreakdownForPostalCode, deliveryFeeForPostalCode, getTier } from "./pricing.mjs";
 
 function buildCustomerHtml(products = CUSTOMER_PRODUCTS) {
   const source = readFileSync(new URL("./app.js", import.meta.url), "utf8");
@@ -134,6 +134,8 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   const englishCompletePage = readFileSync(new URL("./dist/order-calculator-complete/index.html", import.meta.url), "utf8");
   const danishBibCitrusPage = readFileSync(new URL("./dist/ordreberegner-bib-citrus/index.html", import.meta.url), "utf8");
   const englishBibCitrusPage = readFileSync(new URL("./dist/order-calculator-bib-citrus/index.html", import.meta.url), "utf8");
+  const danishResellerPage = readFileSync(new URL("./dist/ordreberegner-forhandlere/index.html", import.meta.url), "utf8");
+  const englishResellerPage = readFileSync(new URL("./dist/reseller-calculator/index.html", import.meta.url), "utf8");
 
   assert.match(index, /id="customerVersionButtonDa"[^>]*href="\.\/ordreberegner\/"[^>]*>Ordreberegner<\/a>/);
   assert.match(index, /id="customerVersionButtonEn"[^>]*href="\.\/order-calculator\/"[^>]*>Order Calculator<\/a>/);
@@ -160,6 +162,16 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.match(englishBibCitrusPage, /750 ml organic citrus/);
   assert.match(englishBibCitrusPage, /5 L organic Bag-in-Box/);
   assert.match(englishBibCitrusPage, /5 L spinach Bag-in-Box/);
+  assert.match(danishResellerPage, /<title>Frankly · Forhandlerberegner<\/title>/);
+  assert.match(danishResellerPage, /Sammensæt jeres forhandlerordre/);
+  assert.match(danishResellerPage, /Forhandler Start/);
+  assert.match(danishResellerPage, /Forhandler Partner/);
+  assert.match(danishResellerPage, /Forhandler Volume/);
+  assert.match(englishResellerPage, /<title>Frankly · Reseller Calculator<\/title>/);
+  assert.match(englishResellerPage, /Build your reseller order/);
+  assert.match(englishResellerPage, /Reseller Start/);
+  assert.match(englishResellerPage, /Reseller Partner/);
+  assert.match(englishResellerPage, /Reseller Volume/);
 });
 
 test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaScript", () => {
@@ -287,6 +299,33 @@ test("BiB- og citrusversionen bruger aftalte prisstiger og creditvægte", () => 
   assert.match(html, /750 ml lemon citrus/);
   assert.match(html, /750 ml lime citrus/);
   assert.match(html, /5 L appelsin Bag-in-Box/);
+});
+
+test("forhandlergrupperne giver 15 procent påslag omkring Plus-priserne på alle produkter", () => {
+  assert.equal(RESELLER_MARKUP, 0.15);
+  assert.deepEqual(RESELLER_TIERS.map(tier => [tier.name, tier.min]), [
+    ["Forhandler Start", 0],
+    ["Forhandler Partner", 125],
+    ["Forhandler Volume", 450],
+  ]);
+  assert.equal(RESELLER_PRODUCTS.length, CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.length);
+  assert.equal(RESELLER_PRODUCTS.length, 29);
+
+  const targetFactors = [1.05, 1, 0.95];
+  for (const product of RESELLER_PRODUCTS) {
+    const original = CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.find(item => item.key === product.key);
+    const plusPrice = customerProductPrice(original, DEFAULT_TIERS[2]);
+    const prices = RESELLER_TIERS.map(tier => customerProductPrice(product, tier));
+    assert.equal(prices.every(Number.isFinite), true, `${product.key} skal have tre priser`);
+    assert.ok(prices[0] > prices[1] && prices[1] > prices[2], `${product.key} skal falde i pris mellem grupperne`);
+    prices.forEach((price, index) => {
+      const resalePrice = price * (1 + RESELLER_MARKUP);
+      assert.ok(Math.abs(resalePrice - plusPrice * targetFactors[index]) <= 0.01, `${product.key} skal lande tæt på målprisen`);
+    });
+  }
+
+  const beetroot = RESELLER_PRODUCTS.find(product => product.key === "juice250_beetroot");
+  assert.deepEqual(RESELLER_TIERS.map(tier => customerProductPrice(beetroot, tier)), [12.55, 11.96, 11.36]);
 });
 
 test("kundeversionen beregner 250 ml-varianternes pristillæg korrekt", () => {

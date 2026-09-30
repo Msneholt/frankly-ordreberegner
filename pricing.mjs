@@ -93,6 +93,27 @@ export const DEFAULT_TIERS = [
   { name: "Key Account", min: 450, prices: { juice250: 12.75, shot60: 7.00, energy340: 11.50, smoothie250: 13.00, juice750: 23.75, shot340: 18.00 } },
 ];
 
+export const RESELLER_MARKUP = 0.15;
+
+export const RESELLER_TIERS = [
+  { name: "Forhandler Start", min: 0, prices: {} },
+  { name: "Forhandler Partner", min: 125, prices: {} },
+  { name: "Forhandler Volume", min: 450, prices: {} },
+];
+
+const RESELLER_TARGET_FACTORS = [1.05, 1, 0.95];
+const roundMoney = value => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+
+export const RESELLER_PRODUCTS = CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.map(product => {
+  const plusPrice = customerProductPrice(product, DEFAULT_TIERS[2]);
+  if (!Number.isFinite(plusPrice)) throw new Error(`Mangler Plus-pris for ${product.key}`);
+  const tierPrices = Object.fromEntries(RESELLER_TIERS.map((tier, index) => [
+    tier.name,
+    roundMoney((plusPrice * RESELLER_TARGET_FACTORS[index]) / (1 + RESELLER_MARKUP)),
+  ]));
+  return { ...product, priceOffset: 0, tierPrices };
+});
+
 export function cloneTiers(tiers = DEFAULT_TIERS) {
   return JSON.parse(JSON.stringify(tiers));
 }

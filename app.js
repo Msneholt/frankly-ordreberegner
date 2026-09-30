@@ -445,6 +445,9 @@ const CUSTOMER_PRODUCT_LABELS_EN = Object.freeze({
 const CUSTOMER_ENGLISH_REPLACEMENTS = [
   ['<html lang="da">', '<html lang="en">'],
   ['"da-DK"', '"en-GB"'],
+  ["Forhandler Start", "Reseller Start"],
+  ["Forhandler Partner", "Reseller Partner"],
+  ["Forhandler Volume", "Reseller Volume"],
   ["Frankly · Ordreberegner", "Frankly · Order Calculator"],
   ["Sammensæt jeres løsning", "Build your order"],
   ["Jeres behov", "Your requirements"],

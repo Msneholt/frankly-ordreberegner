@@ -6,6 +6,8 @@ import {
   CUSTOMER_PRODUCTS_WITH_BIB_CITRUS,
   CUSTOMER_PRODUCTS_WITH_750,
   DEFAULT_TIERS,
+  RESELLER_PRODUCTS,
+  RESELLER_TIERS,
   calculateNextPriceGap,
   customerProductPrice,
   deliveryBreakdownForPostalCode,
@@ -39,10 +41,9 @@ const render = new Function(
 
 const logo = readFileSync(new URL("./assets/frankly-logo-transparent.png", import.meta.url)).toString("base64");
 const logoMarkup = `<img class="brand-logo" src="data:image/png;base64,${logo}" alt="Frankly">`;
-const tiersJson = JSON.stringify(DEFAULT_TIERS.map(tier => ({ name: tier.name, min: tier.min, prices: tier.prices })));
-
-function customerPage(language, productList = CUSTOMER_PRODUCTS) {
+function customerPage(language, productList = CUSTOMER_PRODUCTS, tierList = DEFAULT_TIERS, mode = "customer") {
   const isEnglish = language === "en";
+  const tiersJson = JSON.stringify(tierList.map(tier => ({ name: tier.name, min: tier.min, prices: tier.prices })));
   const products = productList.map(product => ({
     ...product,
     label: isEnglish ? translationContext.labels[product.key] || product.label : product.label,
@@ -56,7 +57,17 @@ function customerPage(language, productList = CUSTOMER_PRODUCTS) {
     calculateNextPriceGap.toString(),
     customerProductPrice.toString(),
   );
-  return isEnglish ? translationContext.translate(html) : html;
+  let page = isEnglish ? translationContext.translate(html) : html;
+  if (mode === "reseller") {
+    page = isEnglish
+      ? page
+          .replaceAll("Frankly · Order Calculator", "Frankly · Reseller Calculator")
+          .replaceAll("Build your order", "Build your reseller order")
+      : page
+          .replaceAll("Frankly · Ordreberegner", "Frankly · Forhandlerberegner")
+          .replaceAll("Sammensæt jeres løsning", "Sammensæt jeres forhandlerordre");
+  }
+  return page;
 }
 
 mkdirSync("dist/ordreberegner", { recursive: true });
@@ -67,6 +78,8 @@ mkdirSync("dist/ordreberegner-komplet", { recursive: true });
 mkdirSync("dist/order-calculator-complete", { recursive: true });
 mkdirSync("dist/ordreberegner-bib-citrus", { recursive: true });
 mkdirSync("dist/order-calculator-bib-citrus", { recursive: true });
+mkdirSync("dist/ordreberegner-forhandlere", { recursive: true });
+mkdirSync("dist/reseller-calculator", { recursive: true });
 mkdirSync("dist/assets", { recursive: true });
 for (const file of ["index.html", "app.js", "pricing.mjs", "styles.css"]) {
   copyFileSync(file, `dist/${file}`);
@@ -82,6 +95,8 @@ writeFileSync("dist/ordreberegner-komplet/index.html", customerPage("da", CUSTOM
 writeFileSync("dist/order-calculator-complete/index.html", customerPage("en", CUSTOMER_PRODUCTS_COMPLETE));
 writeFileSync("dist/ordreberegner-bib-citrus/index.html", customerPage("da", CUSTOMER_PRODUCTS_WITH_BIB_CITRUS));
 writeFileSync("dist/order-calculator-bib-citrus/index.html", customerPage("en", CUSTOMER_PRODUCTS_WITH_BIB_CITRUS));
+writeFileSync("dist/ordreberegner-forhandlere/index.html", customerPage("da", RESELLER_PRODUCTS, RESELLER_TIERS, "reseller"));
+writeFileSync("dist/reseller-calculator/index.html", customerPage("en", RESELLER_PRODUCTS, RESELLER_TIERS, "reseller"));
 writeFileSync("dist/.nojekyll", "");
 
 console.log("Customer calculator pages generated.");
