@@ -649,7 +649,7 @@ async function downloadCustomerVersion(language = "da") {
 
       <aside class="card result-card" aria-live="polite">
         <div class="result-main">
-          <div class="result-heading"><h2>Pristilbud</h2><span id="currentPriceGroup" class="tier-badge">Prisgruppe · Standard</span></div>
+          <div class="result-heading"><h2 id="resultTitle">Pristilbud</h2><span id="currentPriceGroup" class="tier-badge">Prisgruppe · Standard</span></div>
           <div class="product-total"><span id="productTotalLabel">Produkter pr. levering</span><strong id="productTotal">0 stk.</strong></div>
           <div class="metrics">
             <div class="metric"><span>Pris pr. medarbejder / uge</span><strong id="perEmployee">0,00 DKK</strong></div>
@@ -678,7 +678,7 @@ async function downloadCustomerVersion(language = "da") {
     <article id="cleanQuote" class="clean-quote" aria-hidden="true">
       <header class="clean-quote-header">
         ${logoMarkup}
-        <div><h1>Pristilbud</h1><p>Økologiske drikkevarer til arbejdspladsen</p></div>
+        <div><h1 id="cleanQuoteTitle">Pristilbud</h1><p>Økologiske drikkevarer til arbejdspladsen</p></div>
       </header>
       <section class="clean-quote-parties">
         <div>
@@ -720,12 +720,15 @@ async function downloadCustomerVersion(language = "da") {
       var deliveryBreakdownForPostalCode=${deliveryBreakdownFunction};
       var calculateNextPriceGap=${nextPriceGapFunction};
       var customerProductPrice=${customerProductPriceFunction};
-      var offerCode=new URLSearchParams(window.location.search).get("tilbud");
+      var pathOffer=window.location.pathname.replace(/\\\/+$/,"").endsWith("/playdead-saeraftale")?"playdead-aftale":"";
+      var offerCode=new URLSearchParams(window.location.search).get("tilbud")||pathOffer;
       var premiumShotOffer=offerCode==="premium-shot-7";
       var plesnerOffer=offerCode==="plesner-aftale";
+      var playdeadOffer=offerCode==="playdead-aftale";
+      var playdeadPrices={juice250_beetroot:13,juice250_carrot:13,juice250_strawberry:13,juice250_apple:13,juice250_spinach:13.5,juice250_orange:13.75,smoothie250_avocado:13.75,smoothie250_strawberry:13.75,smoothie250_mango:13.75,shot60_ginger:6.75,shot60_turmeric_chili:6.75,energy340_passion:10,energy340_lime_lemon:10};
       var premiumShotOfferQuantities={juice250_beetroot:54,juice250_carrot:72,juice250_strawberry:72,juice250_spinach:36,shot60_ginger:276};
-      function displayedTierName(tier){return plesnerOffer?"Plesner · Særaftale":tier.name;}
-      function quotedProductPrice(product,tier){var basePrice=customerProductPrice(product,tier);if(premiumShotOffer&&tier.name==="Premium"&&product.priceKey==="shot60")return 7;if(plesnerOffer&&product.priceKey==="juice250")return 10;if(plesnerOffer&&product.priceKey==="shot60")return 5;if(plesnerOffer&&product.priceKey==="energy340")return 10;return basePrice;}
+      function displayedTierName(tier){if(playdeadOffer)return "Playdead · Særaftale";return plesnerOffer?"Plesner · Særaftale":tier.name;}
+      function quotedProductPrice(product,tier){var basePrice=customerProductPrice(product,tier);if(premiumShotOffer&&tier.name==="Premium"&&product.priceKey==="shot60")return 7;if(plesnerOffer&&product.priceKey==="juice250")return 10;if(plesnerOffer&&product.priceKey==="shot60")return 5;if(plesnerOffer&&product.priceKey==="energy340")return 10;if(playdeadOffer&&Object.prototype.hasOwnProperty.call(playdeadPrices,product.key))return playdeadPrices[product.key];return basePrice;}
       var money=new Intl.NumberFormat("da-DK",{minimumFractionDigits:2,maximumFractionDigits:2});
       var number=new Intl.NumberFormat("da-DK",{maximumFractionDigits:2});
       var integers=new Intl.NumberFormat("da-DK",{maximumFractionDigits:0});
@@ -797,6 +800,9 @@ async function downloadCustomerVersion(language = "da") {
       }
       function render(){
         var state=getState();
+        document.title=playdeadOffer?"Frankly · Playdead · Særaftale":"Frankly · Ordreberegner";
+        document.getElementById("resultTitle").textContent=playdeadOffer?"Særaftale":"Pristilbud";
+        document.getElementById("cleanQuoteTitle").textContent=playdeadOffer?"Særaftale":"Pristilbud";
         document.getElementById("employees").value=state.employees;
         document.getElementById("employees").disabled=!state.employeesRelevant;
         document.getElementById("currentPriceGroup").textContent="Prisgruppe · "+displayedTierName(state.tier);
@@ -807,7 +813,7 @@ async function downloadCustomerVersion(language = "da") {
         document.getElementById("perDelivery").textContent=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";
         document.getElementById("productTotalLabel").textContent=state.oneTime?"Produkter i bestillingen":"Produkter pr. levering";
         document.getElementById("productTotal").textContent=integers.format(state.unitsDelivery)+" stk.";
-        var priceNotice=document.getElementById("nextPriceNotice");priceNotice.hidden=!plesnerOffer&&!state.priceGap.available;if(plesnerOffer){priceNotice.innerHTML='<strong>Plesner-særaftalen gælder til og med 31. december 2026.</strong>';}else if(state.priceGap.available){priceNotice.innerHTML='<strong>Bestil '+integers.format(state.priceGap.extraProducts)+' produkter yderligere og få en lavere pris pr. produkt.</strong>';}
+        var priceNotice=document.getElementById("nextPriceNotice");priceNotice.hidden=playdeadOffer||(!plesnerOffer&&!state.priceGap.available);if(plesnerOffer){priceNotice.innerHTML='<strong>Plesner-særaftalen gælder til og med 31. december 2026.</strong>';}else if(!playdeadOffer&&state.priceGap.available){priceNotice.innerHTML='<strong>Bestil '+integers.format(state.priceGap.extraProducts)+' produkter yderligere og få en lavere pris pr. produkt.</strong>';}
         var selected=products.filter(function(product){return quantity(product)>0;});
         document.getElementById("orderRows").innerHTML=selected.length?selected.map(function(product){
           var amount=quantity(product);var price=quotedProductPrice(product,state.tier);
@@ -821,14 +827,14 @@ async function downloadCustomerVersion(language = "da") {
       }
       function summaryText(){
         var state=getState();var company=state.company||"Ikke angivet";var contact=state.contact||"Ikke angivet";var postalCode=state.postalCode||"Ikke angivet";
-        var lines=["FRANKLY · PRISTILBUD"];
+        var lines=[playdeadOffer?"FRANKLY · PLAYDEAD · SÆRAFTALE":"FRANKLY · PRISTILBUD"];
         lines.push("Virksomhed: "+company,"Kontaktperson: "+contact,"CVR: "+(state.cvr||"Ikke angivet"),"Faktureringsmail: "+(state.invoiceEmail||"Ikke angivet"),"Telefonnummer: "+(state.phone||"Ikke angivet"),"Postnummer: "+postalCode,"Leveringsadresse: "+(state.deliveryAddress||"Ikke angivet"),"Antal medarbejdere: "+(state.employeesRelevant?integers.format(state.employees):"Ikke relevant"),"Levering: "+cadenceText(state.cadence,state.oneTime),"Prisgruppe: "+displayedTierName(state.tier),"",state.oneTime?"Produkter i bestillingen:":"Produkter pr. levering:");
         var selected=products.filter(function(product){return quantity(product)>0;});
         if(!selected.length)lines.push("Ingen produkter valgt");
         selected.forEach(function(product){var amount=quantity(product);var price=quotedProductPrice(product,state.tier);lines.push("- "+product.label+": "+integers.format(amount)+" stk."+(price==null?" · pris aftales":" × "+money.format(price)+" DKK = "+money.format(amount*price)+" DKK"));});
         var deliverySummary=!state.hasProducts?money.format(0)+" DKK":state.freeDelivery?"Gratis":state.feeKnown?money.format(state.fee)+" DKK":"Aftales";var totalSummary=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";var totalVatSummary=state.priceReady?money.format(state.totalDelivery*1.25)+" DKK":"—";var employeeMetricsReady=state.employeesRelevant&&!state.oneTime;var employeeSummary=employeeMetricsReady?money.format(state.totalWeekly/state.employees)+" DKK ekskl. moms":"Ikke relevant";var employeeUnitsSummary=employeeMetricsReady?number.format(state.unitsWeekly/state.employees):"Ikke relevant";
         lines.push("");if(state.remoteDelivery){lines.push("Levering: "+money.format(state.deliveryCharge)+" DKK","EUR-palle: "+money.format(state.palletFee)+" DKK","Levering i alt: "+money.format(state.fee)+" DKK");}else{lines.push("Levering: "+deliverySummary);}lines.push((state.oneTime?"Total for bestillingen ekskl. moms: ":"Total pr. levering ekskl. moms: ")+totalSummary,"Total inkl. moms: "+totalVatSummary,"Pris pr. medarbejder pr. uge: "+employeeSummary,"Enheder pr. medarbejder pr. uge: "+employeeUnitsSummary);
-        if(plesnerOffer){lines.push("Plesner-særaftalen gælder til og med 31. december 2026.");}else if(state.priceGap.available){lines.push("Bestil "+integers.format(state.priceGap.extraProducts)+" produkter yderligere og få en lavere pris pr. produkt.");}
+        if(plesnerOffer){lines.push("Plesner-særaftalen gælder til og med 31. december 2026.");}else if(!playdeadOffer&&state.priceGap.available){lines.push("Bestil "+integers.format(state.priceGap.extraProducts)+" produkter yderligere og få en lavere pris pr. produkt.");}
         if(state.comment)lines.push("","Kommentar:",state.comment);
         lines.push("","Frankly bekræfter det endelige sortiment og levering.");return lines.join("\\n");
       }
@@ -841,7 +847,7 @@ async function downloadCustomerVersion(language = "da") {
         render();
       });
       document.getElementById("saveButton").addEventListener("click",function(){
-        render();var state=getState();var quote=document.getElementById("cleanQuote").cloneNode(true);quote.removeAttribute("aria-hidden");quote.style.display="block";var styles=document.querySelector("style").textContent;var content='<!doctype html><html lang="da"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Frankly pristilbud</title><style>'+styles+'</style></head><body>'+quote.outerHTML+'</body></html>';var blob=new Blob([content],{type:"text/html;charset=utf-8"});var link=document.createElement("a");var company=state.company||"kunde";link.href=URL.createObjectURL(blob);link.download=("Frankly-pristilbud-"+company).replace(/[^a-z0-9æøå_-]+/gi,"-")+".html";link.click();URL.revokeObjectURL(link.href);showToast("Det rene pristilbud er gemt");
+        render();var state=getState();var quote=document.getElementById("cleanQuote").cloneNode(true);quote.removeAttribute("aria-hidden");quote.style.display="block";var styles=document.querySelector("style").textContent;var documentName=playdeadOffer?"Frankly Playdead særaftale":"Frankly pristilbud";var content='<!doctype html><html lang="da"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>'+documentName+'</title><style>'+styles+'</style></head><body>'+quote.outerHTML+'</body></html>';var blob=new Blob([content],{type:"text/html;charset=utf-8"});var link=document.createElement("a");var company=state.company||"kunde";link.href=URL.createObjectURL(blob);link.download=((playdeadOffer?"Frankly-Playdead-saeraftale-":"Frankly-pristilbud-")+company).replace(/[^a-z0-9æøå_-]+/gi,"-")+".html";link.click();URL.revokeObjectURL(link.href);showToast(playdeadOffer?"Særaftalen er gemt":"Det rene pristilbud er gemt");
       });
       document.getElementById("printButton").addEventListener("click",function(){render();window.print();});
       render();

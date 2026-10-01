@@ -136,6 +136,7 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   const englishBibCitrusPage = readFileSync(new URL("./dist/order-calculator-bib-citrus/index.html", import.meta.url), "utf8");
   const danishResellerPage = readFileSync(new URL("./dist/ordreberegner-forhandlere/index.html", import.meta.url), "utf8");
   const englishResellerPage = readFileSync(new URL("./dist/reseller-calculator/index.html", import.meta.url), "utf8");
+  const playdeadPage = readFileSync(new URL("./dist/playdead-saeraftale/index.html", import.meta.url), "utf8");
 
   assert.match(index, /id="customerVersionButtonDa"[^>]*href="\.\/ordreberegner\/"[^>]*>Ordreberegner<\/a>/);
   assert.match(index, /id="customerVersionButtonEn"[^>]*href="\.\/order-calculator\/"[^>]*>Order Calculator<\/a>/);
@@ -172,6 +173,8 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.match(englishResellerPage, /Reseller Start/);
   assert.match(englishResellerPage, /Reseller Partner/);
   assert.match(englishResellerPage, /Reseller Volume/);
+  assert.match(playdeadPage, /playdead-saeraftale/);
+  assert.match(playdeadPage, /offerCode==="playdead-aftale"/);
 });
 
 test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaScript", () => {
@@ -237,12 +240,37 @@ test("Plesner-linket giver faste særpriser uanset variant, mængde og prisgrupp
   assert.match(script[1], /plesnerOffer&&product\.priceKey==="shot60"\)return 5/);
   assert.match(script[1], /plesnerOffer&&product\.priceKey==="energy340"\)return 10/);
   assert.match(script[1], /Plesner-særaftalen gælder til og med 31\. december 2026\./);
-  assert.match(script[1], /priceNotice\.hidden=!plesnerOffer&&!state\.priceGap\.available/);
-  assert.match(script[1], /if\(plesnerOffer\).*else if\(state\.priceGap\.available\)/);
+  assert.match(script[1], /priceNotice\.hidden=playdeadOffer\|\|\(!plesnerOffer&&!state\.priceGap\.available\)/);
+  assert.match(script[1], /if\(plesnerOffer\).*else if\(!playdeadOffer&&state\.priceGap\.available\)/);
   assert.match(html, /id="cleanQuoteNote"/);
   assert.match(script[1], /cleanQuoteTier"\)\.textContent=displayedTierName\(state\.tier\)/);
   assert.match(script[1], /currentPriceGroup"\)\.textContent="Prisgruppe · "\+displayedTierName\(state\.tier\)/);
   assert.match(script[1], /"Prisgruppe: "\+displayedTierName\(state\.tier\)/);
+});
+
+test("Playdead-særaftalen har faste priser på alle 13 SKU'er", () => {
+  const html = buildCustomerHtml();
+  const script = html.match(/<script>([\s\S]*?)<\/script>/);
+  assert.ok(script);
+  assert.match(script[1], /endsWith\("\/playdead-saeraftale"\)\?"playdead-aftale":""/);
+  assert.match(script[1], /offerCode==="playdead-aftale"/);
+  assert.match(script[1], /return "Playdead · Særaftale"/);
+  assert.match(script[1], /juice250_beetroot:13/);
+  assert.match(script[1], /juice250_carrot:13/);
+  assert.match(script[1], /juice250_strawberry:13/);
+  assert.match(script[1], /juice250_apple:13/);
+  assert.match(script[1], /juice250_spinach:13\.5/);
+  assert.match(script[1], /juice250_orange:13\.75/);
+  assert.match(script[1], /smoothie250_avocado:13\.75/);
+  assert.match(script[1], /smoothie250_strawberry:13\.75/);
+  assert.match(script[1], /smoothie250_mango:13\.75/);
+  assert.match(script[1], /shot60_ginger:6\.75/);
+  assert.match(script[1], /shot60_turmeric_chili:6\.75/);
+  assert.match(script[1], /energy340_passion:10/);
+  assert.match(script[1], /energy340_lime_lemon:10/);
+  assert.match(script[1], /priceNotice\.hidden=playdeadOffer/);
+  assert.match(script[1], /else if\(!playdeadOffer&&state\.priceGap\.available\)/);
+  assert.match(script[1], /playdeadOffer\?"Særaftale":"Pristilbud"/);
 });
 
 test("virksomhedsoplysninger står før Jeres behov, som står over alle produkter", () => {
