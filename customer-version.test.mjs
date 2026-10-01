@@ -186,7 +186,11 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.match(resellerPricingPage, /\+15 %:/);
   assert.match(resellerPricingPage, /<th>Prisgruppe<\/th><th>Credits \/ uge<\/th>/);
   assert.match(resellerPricingPage, /active-row/);
-  assert.match(resellerPricingPage, /5 L Bag-in-Box ØKO/);
+  assert.match(resellerPricingPage, /class="series-table"/);
+  assert.match(resellerPricingPage, /\{key:"bib5000",label:"5\.000 ml juice"\}/);
+  assert.ok(resellerPricingPage.indexOf('{key:"bib5000",label:"5.000 ml juice"}') < resellerPricingPage.indexOf('{key:"citrus750",label:"750 ml citrus"}'));
+  assert.ok(resellerPricingPage.indexOf('{key:"citrus750",label:"750 ml citrus"}') < resellerPricingPage.indexOf('{key:"energy340",label:"340 ml energi"}'));
+  assert.match(resellerPricingPage, /Prisintervallet afspejler variantforskelle/);
 });
 
 test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaScript", () => {
