@@ -137,6 +137,7 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   const danishResellerPage = readFileSync(new URL("./dist/ordreberegner-forhandlere/index.html", import.meta.url), "utf8");
   const englishResellerPage = readFileSync(new URL("./dist/reseller-calculator/index.html", import.meta.url), "utf8");
   const playdeadPage = readFileSync(new URL("./dist/playdead-saeraftale/index.html", import.meta.url), "utf8");
+  const resellerPricingPage = readFileSync(new URL("./dist/forhandler-prisgrupper/index.html", import.meta.url), "utf8");
 
   assert.match(index, /id="customerVersionButtonDa"[^>]*href="\.\/ordreberegner\/"[^>]*>Ordreberegner<\/a>/);
   assert.match(index, /id="customerVersionButtonEn"[^>]*href="\.\/order-calculator\/"[^>]*>Order Calculator<\/a>/);
@@ -175,6 +176,17 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.match(englishResellerPage, /Reseller Volume/);
   assert.match(playdeadPage, /playdead-saeraftale/);
   assert.match(playdeadPage, /offerCode==="playdead-aftale"/);
+  assert.match(resellerPricingPage, /Frankly · Forhandlerprisgrupper/);
+  assert.match(resellerPricingPage, /Forhandler Start/);
+  assert.match(resellerPricingPage, /Forhandler Partner/);
+  assert.match(resellerPricingPage, /Forhandler Volume/);
+  assert.match(resellerPricingPage, /0–124/);
+  assert.match(resellerPricingPage, /125–449/);
+  assert.match(resellerPricingPage, /450\+/);
+  assert.match(resellerPricingPage, /\+15 %:/);
+  assert.match(resellerPricingPage, /<th>Prisgruppe<\/th><th>Credits \/ uge<\/th>/);
+  assert.match(resellerPricingPage, /active-row/);
+  assert.match(resellerPricingPage, /5 L Bag-in-Box ØKO/);
 });
 
 test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaScript", () => {
