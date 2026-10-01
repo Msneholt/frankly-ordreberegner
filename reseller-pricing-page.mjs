@@ -48,7 +48,7 @@ export function renderResellerPricingPage({ logoMarkup, products, tiers }) {
     <section class="card model">
       <div class="model-heading"><div><p class="eyebrow">SAMLET MODEL</p><h2>Grænser og priser</h2><p>Tre prisgrupper som i Franklys almindelige B2B-model. Alle priser er ekskl. moms og pr. produkt.</p></div></div>
       <div id="priceTables"></div>
-      <p class="footnote">Under hver indkøbspris står kundens videresalgspris med 15 % lagt oveni. Prisintervallet afspejler variantforskelle inden for produktserien. Prisniveauerne er beregnet, så videresalgsprisen lander omkring Franklys Plus-priser.</p>
+      <p class="footnote">Under hver indkøbspris står kundens videresalgspris med 15 % lagt oveni. Prisintervallet afspejler variantforskelle inden for produktserien. Priserne følger den fastlagte forhandlerstige.</p>
     </section>
   </main>
   <script>
