@@ -236,8 +236,10 @@ test("Plesner-linket giver faste særpriser uanset variant, mængde og prisgrupp
   assert.match(script[1], /plesnerOffer&&product\.priceKey==="juice250"\)return 10/);
   assert.match(script[1], /plesnerOffer&&product\.priceKey==="shot60"\)return 5/);
   assert.match(script[1], /plesnerOffer&&product\.priceKey==="energy340"\)return 10/);
-  assert.match(script[1], /priceNotice\.hidden=plesnerOffer\|\|!state\.priceGap\.available/);
-  assert.match(script[1], /if\(!plesnerOffer&&state\.priceGap\.available\)/);
+  assert.match(script[1], /Plesner-særaftalen gælder til og med 31\. december 2026\./);
+  assert.match(script[1], /priceNotice\.hidden=!plesnerOffer&&!state\.priceGap\.available/);
+  assert.match(script[1], /if\(plesnerOffer\).*else if\(state\.priceGap\.available\)/);
+  assert.match(html, /id="cleanQuoteNote"/);
   assert.match(script[1], /cleanQuoteTier"\)\.textContent=displayedTierName\(state\.tier\)/);
   assert.match(script[1], /currentPriceGroup"\)\.textContent="Prisgruppe · "\+displayedTierName\(state\.tier\)/);
   assert.match(script[1], /"Prisgruppe: "\+displayedTierName\(state\.tier\)/);

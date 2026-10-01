@@ -708,7 +708,7 @@ async function downloadCustomerVersion(language = "da") {
         <div class="clean-quote-highlight"><span id="cleanQuotePerDeliveryLabel">Pris pr. levering</span><strong id="cleanQuotePerDelivery">—</strong></div>
       </div>
       <div id="cleanQuoteComment" class="clean-quote-comment" hidden><span>Kommentar</span><p id="cleanQuoteCommentText"></p></div>
-      <p class="clean-quote-note">Alle priser er i DKK og ekskl. moms, medmindre andet er angivet. Frankly bekræfter det endelige sortiment og levering.</p>
+      <p id="cleanQuoteNote" class="clean-quote-note">Alle priser er i DKK og ekskl. moms, medmindre andet er angivet. Frankly bekræfter det endelige sortiment og levering.</p>
     </article>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -793,6 +793,7 @@ async function downloadCustomerVersion(language = "da") {
         document.getElementById("cleanQuotePerDeliveryLabel").textContent=state.oneTime?"Pris pr. bestilling":"Pris pr. levering";
         document.getElementById("cleanQuotePerDelivery").textContent=totalText;
         var cleanComment=document.getElementById("cleanQuoteComment");cleanComment.hidden=!state.comment;document.getElementById("cleanQuoteCommentText").textContent=state.comment;
+        document.getElementById("cleanQuoteNote").textContent=plesnerOffer?"Plesner-særaftalen gælder til og med 31. december 2026. Alle priser er i DKK og ekskl. moms.":"Alle priser er i DKK og ekskl. moms, medmindre andet er angivet. Frankly bekræfter det endelige sortiment og levering.";
       }
       function render(){
         var state=getState();
@@ -806,7 +807,7 @@ async function downloadCustomerVersion(language = "da") {
         document.getElementById("perDelivery").textContent=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";
         document.getElementById("productTotalLabel").textContent=state.oneTime?"Produkter i bestillingen":"Produkter pr. levering";
         document.getElementById("productTotal").textContent=integers.format(state.unitsDelivery)+" stk.";
-        var priceNotice=document.getElementById("nextPriceNotice");priceNotice.hidden=plesnerOffer||!state.priceGap.available;if(!plesnerOffer&&state.priceGap.available){priceNotice.innerHTML='<strong>Bestil '+integers.format(state.priceGap.extraProducts)+' produkter yderligere og få en lavere pris pr. produkt.</strong>';}
+        var priceNotice=document.getElementById("nextPriceNotice");priceNotice.hidden=!plesnerOffer&&!state.priceGap.available;if(plesnerOffer){priceNotice.innerHTML='<strong>Plesner-særaftalen gælder til og med 31. december 2026.</strong>';}else if(state.priceGap.available){priceNotice.innerHTML='<strong>Bestil '+integers.format(state.priceGap.extraProducts)+' produkter yderligere og få en lavere pris pr. produkt.</strong>';}
         var selected=products.filter(function(product){return quantity(product)>0;});
         document.getElementById("orderRows").innerHTML=selected.length?selected.map(function(product){
           var amount=quantity(product);var price=quotedProductPrice(product,state.tier);
@@ -827,7 +828,7 @@ async function downloadCustomerVersion(language = "da") {
         selected.forEach(function(product){var amount=quantity(product);var price=quotedProductPrice(product,state.tier);lines.push("- "+product.label+": "+integers.format(amount)+" stk."+(price==null?" · pris aftales":" × "+money.format(price)+" DKK = "+money.format(amount*price)+" DKK"));});
         var deliverySummary=!state.hasProducts?money.format(0)+" DKK":state.freeDelivery?"Gratis":state.feeKnown?money.format(state.fee)+" DKK":"Aftales";var totalSummary=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";var totalVatSummary=state.priceReady?money.format(state.totalDelivery*1.25)+" DKK":"—";var employeeMetricsReady=state.employeesRelevant&&!state.oneTime;var employeeSummary=employeeMetricsReady?money.format(state.totalWeekly/state.employees)+" DKK ekskl. moms":"Ikke relevant";var employeeUnitsSummary=employeeMetricsReady?number.format(state.unitsWeekly/state.employees):"Ikke relevant";
         lines.push("");if(state.remoteDelivery){lines.push("Levering: "+money.format(state.deliveryCharge)+" DKK","EUR-palle: "+money.format(state.palletFee)+" DKK","Levering i alt: "+money.format(state.fee)+" DKK");}else{lines.push("Levering: "+deliverySummary);}lines.push((state.oneTime?"Total for bestillingen ekskl. moms: ":"Total pr. levering ekskl. moms: ")+totalSummary,"Total inkl. moms: "+totalVatSummary,"Pris pr. medarbejder pr. uge: "+employeeSummary,"Enheder pr. medarbejder pr. uge: "+employeeUnitsSummary);
-        if(!plesnerOffer&&state.priceGap.available){lines.push("Bestil "+integers.format(state.priceGap.extraProducts)+" produkter yderligere og få en lavere pris pr. produkt.");}
+        if(plesnerOffer){lines.push("Plesner-særaftalen gælder til og med 31. december 2026.");}else if(state.priceGap.available){lines.push("Bestil "+integers.format(state.priceGap.extraProducts)+" produkter yderligere og få en lavere pris pr. produkt.");}
         if(state.comment)lines.push("","Kommentar:",state.comment);
         lines.push("","Frankly bekræfter det endelige sortiment og levering.");return lines.join("\\n");
       }
