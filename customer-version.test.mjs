@@ -223,8 +223,24 @@ test("særtilbudslinket udfylder Premium-volumen og giver shots til 7 DKK", () =
   assert.match(script[1], /juice250_strawberry:72/);
   assert.match(script[1], /juice250_spinach:36/);
   assert.match(script[1], /shot60_ginger:276/);
-  assert.match(script[1], /tier\.name==="Premium"&&product\.priceKey==="shot60"\?7:basePrice/);
+  assert.match(script[1], /tier\.name==="Premium"&&product\.priceKey==="shot60"\)return 7/);
   assert.equal(54 + 72 + 72 + 36 + 276 * 0.5, 372);
+});
+
+test("Plesner-linket giver faste særpriser uanset variant, mængde og prisgruppe", () => {
+  const html = buildCustomerHtml();
+  const script = html.match(/<script>([\s\S]*?)<\/script>/);
+  assert.ok(script);
+  assert.match(script[1], /offerCode==="plesner-aftale"/);
+  assert.match(script[1], /return plesnerOffer\?"Plesner · Særaftale":tier\.name/);
+  assert.match(script[1], /plesnerOffer&&product\.priceKey==="juice250"\)return 10/);
+  assert.match(script[1], /plesnerOffer&&product\.priceKey==="shot60"\)return 5/);
+  assert.match(script[1], /plesnerOffer&&product\.priceKey==="energy340"\)return 10/);
+  assert.match(script[1], /priceNotice\.hidden=plesnerOffer\|\|!state\.priceGap\.available/);
+  assert.match(script[1], /if\(!plesnerOffer&&state\.priceGap\.available\)/);
+  assert.match(script[1], /cleanQuoteTier"\)\.textContent=displayedTierName\(state\.tier\)/);
+  assert.match(script[1], /currentPriceGroup"\)\.textContent="Prisgruppe · "\+displayedTierName\(state\.tier\)/);
+  assert.match(script[1], /"Prisgruppe: "\+displayedTierName\(state\.tier\)/);
 });
 
 test("virksomhedsoplysninger står før Jeres behov, som står over alle produkter", () => {

@@ -722,8 +722,10 @@ async function downloadCustomerVersion(language = "da") {
       var customerProductPrice=${customerProductPriceFunction};
       var offerCode=new URLSearchParams(window.location.search).get("tilbud");
       var premiumShotOffer=offerCode==="premium-shot-7";
+      var plesnerOffer=offerCode==="plesner-aftale";
       var premiumShotOfferQuantities={juice250_beetroot:54,juice250_carrot:72,juice250_strawberry:72,juice250_spinach:36,shot60_ginger:276};
-      function quotedProductPrice(product,tier){var basePrice=customerProductPrice(product,tier);return premiumShotOffer&&tier.name==="Premium"&&product.priceKey==="shot60"?7:basePrice;}
+      function displayedTierName(tier){return plesnerOffer?"Plesner · Særaftale":tier.name;}
+      function quotedProductPrice(product,tier){var basePrice=customerProductPrice(product,tier);if(premiumShotOffer&&tier.name==="Premium"&&product.priceKey==="shot60")return 7;if(plesnerOffer&&product.priceKey==="juice250")return 10;if(plesnerOffer&&product.priceKey==="shot60")return 5;if(plesnerOffer&&product.priceKey==="energy340")return 10;return basePrice;}
       var money=new Intl.NumberFormat("da-DK",{minimumFractionDigits:2,maximumFractionDigits:2});
       var number=new Intl.NumberFormat("da-DK",{maximumFractionDigits:2});
       var integers=new Intl.NumberFormat("da-DK",{maximumFractionDigits:0});
@@ -779,7 +781,7 @@ async function downloadCustomerVersion(language = "da") {
         document.getElementById("cleanQuotePhone").textContent=state.phone||"Telefonnummer ikke angivet";
         document.getElementById("cleanQuotePostalCode").textContent=state.postalCode?"Postnummer "+state.postalCode:"Postnummer ikke angivet";
         document.getElementById("cleanQuoteDeliveryAddress").textContent=state.deliveryAddress||"Leveringsadresse ikke angivet";
-        document.getElementById("cleanQuoteTier").textContent=state.tier.name;
+        document.getElementById("cleanQuoteTier").textContent=displayedTierName(state.tier);
         document.getElementById("cleanQuoteCadence").textContent=cadenceText(state.cadence,state.oneTime);
         document.getElementById("cleanQuoteEmployees").textContent=state.employeesRelevant?integers.format(state.employees):"Ikke relevant";
         document.getElementById("cleanQuoteQuantityHeading").textContent=state.oneTime?"Antal i bestillingen":"Antal pr. levering";
@@ -796,7 +798,7 @@ async function downloadCustomerVersion(language = "da") {
         var state=getState();
         document.getElementById("employees").value=state.employees;
         document.getElementById("employees").disabled=!state.employeesRelevant;
-        document.getElementById("currentPriceGroup").textContent="Prisgruppe · "+state.tier.name;
+        document.getElementById("currentPriceGroup").textContent="Prisgruppe · "+displayedTierName(state.tier);
         var employeeMetricsReady=state.employeesRelevant&&!state.oneTime;
         document.getElementById("perEmployee").textContent=employeeMetricsReady?money.format(state.totalWeekly/state.employees)+" DKK":"Ikke relevant";
         document.getElementById("unitsPerEmployee").textContent=employeeMetricsReady?number.format(state.unitsWeekly/state.employees):"Ikke relevant";
@@ -804,7 +806,7 @@ async function downloadCustomerVersion(language = "da") {
         document.getElementById("perDelivery").textContent=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";
         document.getElementById("productTotalLabel").textContent=state.oneTime?"Produkter i bestillingen":"Produkter pr. levering";
         document.getElementById("productTotal").textContent=integers.format(state.unitsDelivery)+" stk.";
-        var priceNotice=document.getElementById("nextPriceNotice");priceNotice.hidden=!state.priceGap.available;if(state.priceGap.available){priceNotice.innerHTML='<strong>Bestil '+integers.format(state.priceGap.extraProducts)+' produkter yderligere og få en lavere pris pr. produkt.</strong>';}
+        var priceNotice=document.getElementById("nextPriceNotice");priceNotice.hidden=plesnerOffer||!state.priceGap.available;if(!plesnerOffer&&state.priceGap.available){priceNotice.innerHTML='<strong>Bestil '+integers.format(state.priceGap.extraProducts)+' produkter yderligere og få en lavere pris pr. produkt.</strong>';}
         var selected=products.filter(function(product){return quantity(product)>0;});
         document.getElementById("orderRows").innerHTML=selected.length?selected.map(function(product){
           var amount=quantity(product);var price=quotedProductPrice(product,state.tier);
@@ -819,13 +821,13 @@ async function downloadCustomerVersion(language = "da") {
       function summaryText(){
         var state=getState();var company=state.company||"Ikke angivet";var contact=state.contact||"Ikke angivet";var postalCode=state.postalCode||"Ikke angivet";
         var lines=["FRANKLY · PRISTILBUD"];
-        lines.push("Virksomhed: "+company,"Kontaktperson: "+contact,"CVR: "+(state.cvr||"Ikke angivet"),"Faktureringsmail: "+(state.invoiceEmail||"Ikke angivet"),"Telefonnummer: "+(state.phone||"Ikke angivet"),"Postnummer: "+postalCode,"Leveringsadresse: "+(state.deliveryAddress||"Ikke angivet"),"Antal medarbejdere: "+(state.employeesRelevant?integers.format(state.employees):"Ikke relevant"),"Levering: "+cadenceText(state.cadence,state.oneTime),"Prisgruppe: "+state.tier.name,"",state.oneTime?"Produkter i bestillingen:":"Produkter pr. levering:");
+        lines.push("Virksomhed: "+company,"Kontaktperson: "+contact,"CVR: "+(state.cvr||"Ikke angivet"),"Faktureringsmail: "+(state.invoiceEmail||"Ikke angivet"),"Telefonnummer: "+(state.phone||"Ikke angivet"),"Postnummer: "+postalCode,"Leveringsadresse: "+(state.deliveryAddress||"Ikke angivet"),"Antal medarbejdere: "+(state.employeesRelevant?integers.format(state.employees):"Ikke relevant"),"Levering: "+cadenceText(state.cadence,state.oneTime),"Prisgruppe: "+displayedTierName(state.tier),"",state.oneTime?"Produkter i bestillingen:":"Produkter pr. levering:");
         var selected=products.filter(function(product){return quantity(product)>0;});
         if(!selected.length)lines.push("Ingen produkter valgt");
         selected.forEach(function(product){var amount=quantity(product);var price=quotedProductPrice(product,state.tier);lines.push("- "+product.label+": "+integers.format(amount)+" stk."+(price==null?" · pris aftales":" × "+money.format(price)+" DKK = "+money.format(amount*price)+" DKK"));});
         var deliverySummary=!state.hasProducts?money.format(0)+" DKK":state.freeDelivery?"Gratis":state.feeKnown?money.format(state.fee)+" DKK":"Aftales";var totalSummary=state.priceReady?money.format(state.totalDelivery)+" DKK":"—";var totalVatSummary=state.priceReady?money.format(state.totalDelivery*1.25)+" DKK":"—";var employeeMetricsReady=state.employeesRelevant&&!state.oneTime;var employeeSummary=employeeMetricsReady?money.format(state.totalWeekly/state.employees)+" DKK ekskl. moms":"Ikke relevant";var employeeUnitsSummary=employeeMetricsReady?number.format(state.unitsWeekly/state.employees):"Ikke relevant";
         lines.push("");if(state.remoteDelivery){lines.push("Levering: "+money.format(state.deliveryCharge)+" DKK","EUR-palle: "+money.format(state.palletFee)+" DKK","Levering i alt: "+money.format(state.fee)+" DKK");}else{lines.push("Levering: "+deliverySummary);}lines.push((state.oneTime?"Total for bestillingen ekskl. moms: ":"Total pr. levering ekskl. moms: ")+totalSummary,"Total inkl. moms: "+totalVatSummary,"Pris pr. medarbejder pr. uge: "+employeeSummary,"Enheder pr. medarbejder pr. uge: "+employeeUnitsSummary);
-        if(state.priceGap.available){lines.push("Bestil "+integers.format(state.priceGap.extraProducts)+" produkter yderligere og få en lavere pris pr. produkt.");}
+        if(!plesnerOffer&&state.priceGap.available){lines.push("Bestil "+integers.format(state.priceGap.extraProducts)+" produkter yderligere og få en lavere pris pr. produkt.");}
         if(state.comment)lines.push("","Kommentar:",state.comment);
         lines.push("","Frankly bekræfter det endelige sortiment og levering.");return lines.join("\\n");
       }
