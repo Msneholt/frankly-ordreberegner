@@ -1,5 +1,6 @@
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
+import { renderResellerPricingPage } from "./reseller-pricing-page.mjs";
 import {
   CUSTOMER_PRODUCTS,
   CUSTOMER_PRODUCTS_COMPLETE,
@@ -81,6 +82,7 @@ mkdirSync("dist/order-calculator-bib-citrus", { recursive: true });
 mkdirSync("dist/ordreberegner-forhandlere", { recursive: true });
 mkdirSync("dist/reseller-calculator", { recursive: true });
 mkdirSync("dist/playdead-saeraftale", { recursive: true });
+mkdirSync("dist/forhandler-prisgrupper", { recursive: true });
 mkdirSync("dist/assets", { recursive: true });
 for (const file of ["index.html", "app.js", "pricing.mjs", "styles.css"]) {
   copyFileSync(file, `dist/${file}`);
@@ -99,6 +101,7 @@ writeFileSync("dist/order-calculator-bib-citrus/index.html", customerPage("en", 
 writeFileSync("dist/ordreberegner-forhandlere/index.html", customerPage("da", RESELLER_PRODUCTS, RESELLER_TIERS, "reseller"));
 writeFileSync("dist/reseller-calculator/index.html", customerPage("en", RESELLER_PRODUCTS, RESELLER_TIERS, "reseller"));
 writeFileSync("dist/playdead-saeraftale/index.html", customerPage("da"));
+writeFileSync("dist/forhandler-prisgrupper/index.html", renderResellerPricingPage({ logoMarkup, products: RESELLER_PRODUCTS, tiers: RESELLER_TIERS }));
 writeFileSync("dist/.nojekyll", "");
 
 console.log("Customer calculator pages generated.");
