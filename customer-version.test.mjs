@@ -363,7 +363,7 @@ test("BiB- og citrusversionen bruger aftalte prisstiger og creditvægte", () => 
   assert.match(html, /5 L appelsin Bag-in-Box/);
 });
 
-test("forhandlergrupperne giver 15 procent påslag omkring Plus-priserne på alle produkter", () => {
+test("forhandlergrupperne bruger den aftalte prisstige og viser 15 procent påslag", () => {
   assert.equal(RESELLER_MARKUP, 0.15);
   assert.deepEqual(RESELLER_TIERS.map(tier => [tier.name, tier.min]), [
     ["Forhandler Start", 0],
@@ -373,21 +373,29 @@ test("forhandlergrupperne giver 15 procent påslag omkring Plus-priserne på all
   assert.equal(RESELLER_PRODUCTS.length, CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.length);
   assert.equal(RESELLER_PRODUCTS.length, 29);
 
-  const targetFactors = [1.05, 1, 0.95];
   for (const product of RESELLER_PRODUCTS) {
-    const original = CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.find(item => item.key === product.key);
-    const plusPrice = customerProductPrice(original, DEFAULT_TIERS[2]);
     const prices = RESELLER_TIERS.map(tier => customerProductPrice(product, tier));
     assert.equal(prices.every(Number.isFinite), true, `${product.key} skal have tre priser`);
     assert.ok(prices[0] > prices[1] && prices[1] > prices[2], `${product.key} skal falde i pris mellem grupperne`);
-    prices.forEach((price, index) => {
-      const resalePrice = price * (1 + RESELLER_MARKUP);
-      assert.ok(Math.abs(resalePrice - plusPrice * targetFactors[index]) <= 0.01, `${product.key} skal lande tæt på målprisen`);
-    });
   }
 
-  const beetroot = RESELLER_PRODUCTS.find(product => product.key === "juice250_beetroot");
-  assert.deepEqual(RESELLER_TIERS.map(tier => customerProductPrice(beetroot, tier)), [12.55, 11.96, 11.36]);
+  const prices = key => RESELLER_TIERS.map(tier => customerProductPrice(RESELLER_PRODUCTS.find(product => product.key === key), tier));
+  assert.deepEqual(prices("bib5000_orange"), [165, 160, 155]);
+  assert.deepEqual(prices("bib5000_spinach"), [155, 150, 145]);
+  assert.deepEqual(prices("bib5000_strawberry"), [145, 140, 135]);
+  assert.deepEqual(prices("bib5000_carrot"), [140, 135, 130]);
+  assert.deepEqual(prices("bib5000_beetroot"), [140, 135, 130]);
+  assert.deepEqual(prices("bib5000_apple"), [135, 130, 125]);
+  assert.deepEqual(prices("citrus750_lemon"), [45, 42.5, 40]);
+  assert.deepEqual(prices("citrus750_lime"), [50, 47.5, 45]);
+  assert.deepEqual(prices("energy340_passion"), [12, 11, 10]);
+  assert.deepEqual(prices("shot60_ginger"), [7, 6.5, 6]);
+  assert.deepEqual(prices("juice250_beetroot"), [12.5, 11.75, 11]);
+  assert.deepEqual(prices("juice250_spinach"), [13, 12.25, 11.5]);
+  assert.deepEqual(prices("juice250_orange"), [13.25, 12.5, 11.75]);
+  assert.deepEqual(prices("smoothie250_avocado"), [13.25, 12.5, 11.75]);
+  assert.deepEqual(prices("shot340_ginger"), [17.5, 16.5, 15.5]);
+  assert.deepEqual(prices("juice750_beetroot"), [23, 21.75, 20.5]);
 });
 
 test("kundeversionen beregner 250 ml-varianternes pristillæg korrekt", () => {
