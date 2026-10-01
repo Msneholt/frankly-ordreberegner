@@ -101,16 +101,32 @@ export const RESELLER_TIERS = [
   { name: "Forhandler Volume", min: 450, prices: {} },
 ];
 
-const RESELLER_TARGET_FACTORS = [1.05, 1, 0.95];
-const roundMoney = value => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+const RESELLER_SERIES_PRICE_LADDERS = {
+  juice250: [12.50, 11.75, 11.00],
+  smoothie250: [13.25, 12.50, 11.75],
+  shot60: [7.00, 6.50, 6.00],
+  energy340: [12.00, 11.00, 10.00],
+  juice750: [23.00, 21.75, 20.50],
+  shot340: [17.50, 16.50, 15.50],
+};
+
+const RESELLER_SKU_PRICE_LADDERS = {
+  citrus750_lemon: [45.00, 42.50, 40.00],
+  citrus750_lime: [50.00, 47.50, 45.00],
+  bib5000_spinach: [155.00, 150.00, 145.00],
+  bib5000_apple: [135.00, 130.00, 125.00],
+  bib5000_beetroot: [140.00, 135.00, 130.00],
+  bib5000_carrot: [140.00, 135.00, 130.00],
+  bib5000_strawberry: [145.00, 140.00, 135.00],
+  bib5000_orange: [165.00, 160.00, 155.00],
+};
 
 export const RESELLER_PRODUCTS = CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.map(product => {
-  const plusPrice = customerProductPrice(product, DEFAULT_TIERS[2]);
-  if (!Number.isFinite(plusPrice)) throw new Error(`Mangler Plus-pris for ${product.key}`);
-  const tierPrices = Object.fromEntries(RESELLER_TIERS.map((tier, index) => [
-    tier.name,
-    roundMoney((plusPrice * RESELLER_TARGET_FACTORS[index]) / (1 + RESELLER_MARKUP)),
-  ]));
+  const seriesLadder = RESELLER_SERIES_PRICE_LADDERS[product.priceKey];
+  const ladder = RESELLER_SKU_PRICE_LADDERS[product.key]
+    ?? seriesLadder?.map(price => price + (Number(product.priceOffset) || 0));
+  if (!ladder || ladder.length !== RESELLER_TIERS.length) throw new Error(`Mangler forhandlerpriser for ${product.key}`);
+  const tierPrices = Object.fromEntries(RESELLER_TIERS.map((tier, index) => [tier.name, ladder[index]]));
   return { ...product, priceOffset: 0, tierPrices };
 });
 
