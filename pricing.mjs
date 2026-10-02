@@ -114,7 +114,7 @@ const RESELLER_SKU_PRICE_LADDERS = {
   citrus750_lemon: [45.00, 42.50, 40.00],
   citrus750_lime: [50.00, 47.50, 45.00],
   bib5000_spinach: [155.00, 150.00, 145.00],
-  bib5000_apple: [135.00, 130.00, 125.00],
+  bib5000_apple: [135.00, 132.50, 125.00],
   bib5000_beetroot: [140.00, 135.00, 130.00],
   bib5000_carrot: [140.00, 135.00, 130.00],
   bib5000_strawberry: [145.00, 140.00, 135.00],
