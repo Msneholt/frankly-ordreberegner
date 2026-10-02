@@ -145,8 +145,12 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.doesNotMatch(app, /customerVersionButtonEn\.addEventListener/);
   assert.match(danishPage, /<title>Frankly · Ordreberegner<\/title>/);
   assert.match(danishPage, /Éngangsbestilling/);
+  assert.match(danishPage, /750 ml citrus ØKO/);
+  assert.match(danishPage, /5 L Bag-in-Box ØKO/);
   assert.match(englishPage, /<title>Frankly · Order Calculator<\/title>/);
   assert.match(englishPage, /One-time order/);
+  assert.match(englishPage, /750 ml organic citrus/);
+  assert.match(englishPage, /5 L organic Bag-in-Box/);
   assert.match(englishPage, /Save this quote and send it to Frankly\./);
   assert.match(danish750Page, /750 ml juice ØKO/);
   assert.match(danish750Page, /750 ml rødbede juice/);
@@ -178,6 +182,7 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.match(playdeadPage, /offerCode==="playdead-aftale"/);
   assert.match(resellerPricingPage, /Frankly · Forhandlerprisgrupper/);
   assert.match(resellerPricingPage, /Forhandler Start/);
+  assert.match(resellerPricingPage, /href="\.\.\/ordreberegner-forhandlere\/"[^>]*>Åbn ordreberegner<\/a>/);
   assert.match(resellerPricingPage, /Forhandler Partner/);
   assert.match(resellerPricingPage, /Forhandler Volume/);
   assert.match(resellerPricingPage, /0–124/);
