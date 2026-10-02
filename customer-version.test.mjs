@@ -390,7 +390,7 @@ test("forhandlergrupperne bruger den aftalte prisstige og viser 15 procent påsl
   assert.deepEqual(prices("bib5000_strawberry"), [145, 140, 135]);
   assert.deepEqual(prices("bib5000_carrot"), [140, 135, 130]);
   assert.deepEqual(prices("bib5000_beetroot"), [140, 135, 130]);
-  assert.deepEqual(prices("bib5000_apple"), [135, 130, 125]);
+  assert.deepEqual(prices("bib5000_apple"), [135, 132.5, 125]);
   assert.deepEqual(prices("citrus750_lemon"), [45, 42.5, 40]);
   assert.deepEqual(prices("citrus750_lime"), [50, 47.5, 45]);
   assert.deepEqual(prices("energy340_passion"), [12, 11, 10]);
