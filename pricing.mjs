@@ -55,12 +55,12 @@ export const CUSTOMER_PRODUCTS_750_CITRUS = [
 ];
 
 export const CUSTOMER_PRODUCTS_BIB = [
-  { key: "bib5000_spinach", label: "5 L spinat Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 155, Select: 152.5, Plus: 150, Premium: 147.5, "Key Account": 145 }, priceOffset: 0 },
-  { key: "bib5000_apple", label: "5 L æble Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 135, Select: 133.75, Plus: 132.5, Premium: 131.25, "Key Account": 130 }, priceOffset: 0 },
-  { key: "bib5000_beetroot", label: "5 L rødbede Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 140, Select: 138, Plus: 136, Premium: 134, "Key Account": 132 }, priceOffset: 0 },
-  { key: "bib5000_carrot", label: "5 L gulerod Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 140, Select: 138, Plus: 136, Premium: 134, "Key Account": 132 }, priceOffset: 0 },
-  { key: "bib5000_strawberry", label: "5 L jordbær Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 145, Select: 142.5, Plus: 140, Premium: 137.5, "Key Account": 135 }, priceOffset: 0 },
-  { key: "bib5000_orange", label: "5 L appelsin Bag-in-Box", weight: 10, step: 6, priceKey: "bib5000", tierPrices: { Standard: 165, Select: 162.5, Plus: 160, Premium: 157.5, "Key Account": 155 }, priceOffset: 0 },
+  { key: "bib5000_spinach", label: "5 L spinat Bag-in-Box", weight: 10, step: 1, priceKey: "bib5000", tierPrices: { Standard: 155, Select: 152.5, Plus: 150, Premium: 147.5, "Key Account": 145 }, priceOffset: 0 },
+  { key: "bib5000_apple", label: "5 L æble Bag-in-Box", weight: 10, step: 1, priceKey: "bib5000", tierPrices: { Standard: 135, Select: 133.75, Plus: 132.5, Premium: 131.25, "Key Account": 130 }, priceOffset: 0 },
+  { key: "bib5000_beetroot", label: "5 L rødbede Bag-in-Box", weight: 10, step: 1, priceKey: "bib5000", tierPrices: { Standard: 140, Select: 138, Plus: 136, Premium: 134, "Key Account": 132 }, priceOffset: 0 },
+  { key: "bib5000_carrot", label: "5 L gulerod Bag-in-Box", weight: 10, step: 1, priceKey: "bib5000", tierPrices: { Standard: 140, Select: 138, Plus: 136, Premium: 134, "Key Account": 132 }, priceOffset: 0 },
+  { key: "bib5000_strawberry", label: "5 L jordbær Bag-in-Box", weight: 10, step: 1, priceKey: "bib5000", tierPrices: { Standard: 145, Select: 142.5, Plus: 140, Premium: 137.5, "Key Account": 135 }, priceOffset: 0 },
+  { key: "bib5000_orange", label: "5 L appelsin Bag-in-Box", weight: 10, step: 1, priceKey: "bib5000", tierPrices: { Standard: 165, Select: 162.5, Plus: 160, Premium: 157.5, "Key Account": 155 }, priceOffset: 0 },
 ];
 
 export const CUSTOMER_PRODUCTS_WITH_BIB_CITRUS = [...CUSTOMER_PRODUCTS_COMPLETE, ...CUSTOMER_PRODUCTS_750_CITRUS, ...CUSTOMER_PRODUCTS_BIB];
@@ -121,14 +121,18 @@ const RESELLER_SKU_PRICE_LADDERS = {
   bib5000_orange: [165.00, 160.00, 155.00],
 };
 
-export const RESELLER_PRODUCTS = CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.map(product => {
+const RESELLER_SERIES_ORDER = ["bib5000", "citrus750", "energy340", "shot340", "juice750", "juice250", "shot60", "smoothie250"];
+
+export const RESELLER_PRODUCTS = [...CUSTOMER_PRODUCTS_WITH_BIB_CITRUS]
+  .sort((a, b) => RESELLER_SERIES_ORDER.indexOf(a.priceKey) - RESELLER_SERIES_ORDER.indexOf(b.priceKey))
+  .map(product => {
   const seriesLadder = RESELLER_SERIES_PRICE_LADDERS[product.priceKey];
   const ladder = RESELLER_SKU_PRICE_LADDERS[product.key]
     ?? seriesLadder?.map(price => price + (Number(product.priceOffset) || 0));
   if (!ladder || ladder.length !== RESELLER_TIERS.length) throw new Error(`Mangler forhandlerpriser for ${product.key}`);
   const tierPrices = Object.fromEntries(RESELLER_TIERS.map((tier, index) => [tier.name, ladder[index]]));
   return { ...product, priceOffset: 0, tierPrices };
-});
+  });
 
 export function cloneTiers(tiers = DEFAULT_TIERS) {
   return JSON.parse(JSON.stringify(tiers));
