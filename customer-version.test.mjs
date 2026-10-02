@@ -183,7 +183,7 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.match(resellerPricingPage, /0–124/);
   assert.match(resellerPricingPage, /125–449/);
   assert.match(resellerPricingPage, /450\+/);
-  assert.match(resellerPricingPage, /\+15 %:/);
+  assert.doesNotMatch(resellerPricingPage, /\+15 %:/);
   assert.match(resellerPricingPage, /<th>Prisgruppe<\/th><th>Credits \/ uge<\/th>/);
   assert.match(resellerPricingPage, /active-row/);
   assert.match(resellerPricingPage, /class="series-table"/);
@@ -191,6 +191,8 @@ test("kundeversionerne har selvstændige offentlige adresser på dansk og engels
   assert.ok(resellerPricingPage.indexOf('{key:"bib5000",label:"5.000 ml juice"}') < resellerPricingPage.indexOf('{key:"citrus750",label:"750 ml citrus"}'));
   assert.ok(resellerPricingPage.indexOf('{key:"citrus750",label:"750 ml citrus"}') < resellerPricingPage.indexOf('{key:"energy340",label:"340 ml energi"}'));
   assert.match(resellerPricingPage, /Prisintervallet afspejler variantforskelle/);
+  assert.ok(resellerPricingPage.indexOf('{key:"bib5000",label:"5.000 ml Bag-in-Box"') < resellerPricingPage.indexOf('{key:"citrus750",label:"750 ml citrus"'));
+  assert.match(resellerPricingPage, /document\.addEventListener\("change",function\(event\)/);
 });
 
 test("den engelske Order Calculator er gennemgående oversat og har gyldig JavaScript", () => {
@@ -350,7 +352,7 @@ test("BiB- og citrusversionen bruger aftalte prisstiger og creditvægte", () => 
   assert.equal(CUSTOMER_PRODUCTS_BIB.length, 6);
   assert.equal(CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.length, 29);
   assert.equal(CUSTOMER_PRODUCTS_750_CITRUS.every(product => product.weight === 2 && product.step === 6), true);
-  assert.equal(CUSTOMER_PRODUCTS_BIB.every(product => product.weight === 10 && product.step === 6), true);
+  assert.equal(CUSTOMER_PRODUCTS_BIB.every(product => product.weight === 10 && product.step === 1), true);
   assert.deepEqual(CUSTOMER_PRODUCTS_750_CITRUS.map(product => customerProductPrice(product, DEFAULT_TIERS[0])), [40, 45]);
   assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[0])), [155, 135, 140, 140, 145, 165]);
   assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[1])), [152.5, 133.75, 138, 138, 142.5, 162.5]);
@@ -372,6 +374,9 @@ test("forhandlergrupperne bruger den aftalte prisstige og viser 15 procent påsl
   ]);
   assert.equal(RESELLER_PRODUCTS.length, CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.length);
   assert.equal(RESELLER_PRODUCTS.length, 29);
+  assert.equal(RESELLER_PRODUCTS[0].priceKey, "bib5000");
+  assert.equal(RESELLER_PRODUCTS[6].priceKey, "citrus750");
+  assert.equal(RESELLER_PRODUCTS[8].priceKey, "energy340");
 
   for (const product of RESELLER_PRODUCTS) {
     const prices = RESELLER_TIERS.map(tier => customerProductPrice(product, tier));
