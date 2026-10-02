@@ -90,8 +90,8 @@ for (const file of ["index.html", "app.js", "pricing.mjs", "styles.css"]) {
 for (const file of ["frankly-logo-transparent.png", "frankly-logo.png"]) {
   copyFileSync(`assets/${file}`, `dist/assets/${file}`);
 }
-writeFileSync("dist/ordreberegner/index.html", customerPage("da"));
-writeFileSync("dist/order-calculator/index.html", customerPage("en"));
+writeFileSync("dist/ordreberegner/index.html", customerPage("da", CUSTOMER_PRODUCTS_WITH_BIB_CITRUS));
+writeFileSync("dist/order-calculator/index.html", customerPage("en", CUSTOMER_PRODUCTS_WITH_BIB_CITRUS));
 writeFileSync("dist/ordreberegner-750ml/index.html", customerPage("da", CUSTOMER_PRODUCTS_WITH_750));
 writeFileSync("dist/order-calculator-750ml/index.html", customerPage("en", CUSTOMER_PRODUCTS_WITH_750));
 writeFileSync("dist/ordreberegner-komplet/index.html", customerPage("da", CUSTOMER_PRODUCTS_COMPLETE));
