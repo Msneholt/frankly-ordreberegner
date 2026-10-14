@@ -1,4 +1,4 @@
-import { CREDIT_PRODUCTS, CUSTOMER_PRODUCTS, DEFAULT_QUANTITIES, PRODUCTS, DEFAULT_TIERS, calculateCredits, calculateEmployeeMetrics, calculateNextPriceGap, calculateQuoteTotals, calculateUpgradeTrade, calculateWeeklyCredits, cloneTiers, customerProductPrice, deliveryBreakdownForPostalCode, formatRange, getTier, normalizePackQuantity, runModelChecks, validateTiers } from "./pricing.mjs";
+import { RANGE_PRODUCTS, productPriceRange, CREDIT_PRODUCTS, CUSTOMER_PRODUCTS, DEFAULT_QUANTITIES, PRODUCTS, DEFAULT_TIERS, calculateCredits, calculateEmployeeMetrics, calculateNextPriceGap, calculateQuoteTotals, calculateUpgradeTrade, calculateWeeklyCredits, cloneTiers, customerProductPrice, deliveryBreakdownForPostalCode, formatRange, getTier, normalizePackQuantity, runModelChecks, validateTiers } from "./pricing.mjs";
 
 const STORAGE_KEY = "frankly-b2b-pricing-v1";
 const currency = new Intl.NumberFormat("da-DK", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -111,6 +111,10 @@ function cadenceLabel() {
   return cadenceWeeks === 1 ? "Hver uge" : `Hver ${cadenceWeeks}. uge`;
 }
 
+function formattedPriceRange(product, tier) {
+  return productPriceRange(product, tier).map(price => currency.format(price)).join("–");
+}
+
 function renderRecommendation() {
   const result = getTier(tiers, normalizedVolume());
   const deliveryCredits = calculateCredits(quantities);
@@ -122,6 +126,12 @@ function renderRecommendation() {
     <div class="price-card">
       <span class="price-value">${currency.format(result.tier.prices[product.key])}</span>
       <span class="price-unit">${product.label}<br>DKK / stk.</span>
+    </div>
+  `).join("");
+  els.priceCards.innerHTML += RANGE_PRODUCTS.map(product => `
+    <div class="price-card price-card-range">
+      <span class="price-value">${formattedPriceRange(product, result.tier)}</span>
+      <span class="price-unit">${product.label}<br>DKK / stk. · efter variant</span>
     </div>
   `).join("");
   renderEmployeeMetrics(result.tier);
@@ -884,6 +894,7 @@ function renderTable() {
       <td class="tier-name-cell">${tier.name}</td>
       <td>${rangeCell(tier, index)}</td>
       ${PRODUCTS.map(product => `<td>${tableCell(tier, index, product)}</td>`).join("")}
+      ${RANGE_PRODUCTS.map(product => `<td>${formattedPriceRange(product, tier)} DKK</td>`).join("")}
     </tr>
   `).join("");
 }
@@ -1038,6 +1049,7 @@ els.copyButton.addEventListener("click", async () => {
     ...CREDIT_PRODUCTS.filter(product => quantities[product.key] > 0).map(product => `- ${product.label}: ${integer.format(quantities[product.key])} stk. × ${credits.format(product.weight)} credit`),
     "Priser:",
     ...PRODUCTS.map(product => `${product.label}: ${currency.format(tier.prices[product.key])} DKK/stk. ekskl. moms`),
+    ...RANGE_PRODUCTS.map(product => `${product.label}: ${formattedPriceRange(product, tier)} DKK/stk. ekskl. moms`),
   ];
   const employee = calculateEmployeeMetrics(quantities, tier, cadenceWeeks, employeeCount);
   lines.push(
@@ -1062,3 +1074,4 @@ els.copyButton.addEventListener("click", async () => {
 });
 
 renderAll();
+

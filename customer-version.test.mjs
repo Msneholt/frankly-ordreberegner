@@ -358,12 +358,21 @@ test("BiB- og citrusversionen bruger aftalte prisstiger og creditvægte", () => 
   assert.equal(CUSTOMER_PRODUCTS_WITH_BIB_CITRUS.length, 29);
   assert.equal(CUSTOMER_PRODUCTS_750_CITRUS.every(product => product.weight === 2 && product.step === 6), true);
   assert.equal(CUSTOMER_PRODUCTS_BIB.every(product => product.weight === 10 && product.step === 1), true);
-  assert.deepEqual(CUSTOMER_PRODUCTS_750_CITRUS.map(product => customerProductPrice(product, DEFAULT_TIERS[0])), [40, 45]);
-  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[0])), [155, 135, 140, 140, 145, 165]);
-  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[1])), [152.5, 133.75, 138, 138, 142.5, 162.5]);
-  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[2])), [150, 132.5, 136, 136, 140, 160]);
-  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[3])), [147.5, 131.25, 134, 134, 137.5, 157.5]);
-  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[4])), [145, 130, 132, 132, 135, 155]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_750_CITRUS.map(product => customerProductPrice(product, DEFAULT_TIERS[0])), [46, 48.5]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[0])), [155, 135, 142, 142, 145, 160]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[1])), [152.5, 132.5, 139.5, 139.5, 142.5, 157.5]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[2])), [150, 130, 137, 137, 140, 155]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[3])), [147.5, 127.5, 134.5, 134.5, 137.5, 152.5]);
+  assert.deepEqual(CUSTOMER_PRODUCTS_BIB.map(product => customerProductPrice(product, DEFAULT_TIERS[4])), [145, 125, 132, 132, 135, 150]);
+  for (const products of [CUSTOMER_PRODUCTS_BIB, CUSTOMER_PRODUCTS_750_CITRUS]) {
+    const step = products === CUSTOMER_PRODUCTS_BIB ? 2.5 : 1.5;
+    for (const product of products) {
+      for (let index = 1; index < DEFAULT_TIERS.length; index++) {
+        assert.equal(customerProductPrice(product, DEFAULT_TIERS[index - 1]) - customerProductPrice(product, DEFAULT_TIERS[index]), step);
+      }
+    }
+  }
+  assert.deepEqual(CUSTOMER_PRODUCTS_750_CITRUS.map(product => customerProductPrice(product, DEFAULT_TIERS[4])), [40, 42.5]);
   const html = buildCustomerHtml(CUSTOMER_PRODUCTS_WITH_BIB_CITRUS);
   assert.match(html, /750 ml lemon citrus/);
   assert.match(html, /750 ml lime citrus/);
@@ -539,3 +548,4 @@ test("SKU-mix tæller hver 250 ml-variant som én credit", () => {
   assert.equal(gap.targetQuantities.juice250_spinach, 18);
   assert.equal(gap.targetQuantities.juice250_orange, 18);
 });
+

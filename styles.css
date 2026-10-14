@@ -475,3 +475,8 @@ tr.active-row td { background: var(--green-100); }
   body.printing-quote .quote-dialog { width: 100%; max-height: none; overflow: visible; padding: 0; border-radius: 0; background: var(--white); box-shadow: none; }
   body.printing-quote .quote-document { width: 210mm; min-height: 297mm; padding: 14mm 12mm; border: 0; box-shadow: none; }
 }
+
+
+.price-card-range { grid-column: span 2; }
+.price-card-range .price-value { font-size: 22px; }
+@media (max-width: 600px) { .price-card-range { grid-column: span 1; } .price-card-range .price-value { font-size: 18px; } }
